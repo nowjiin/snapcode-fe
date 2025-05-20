@@ -5,14 +5,18 @@ import { GuidingBox } from '../components/GuidingBox';
 import { EvaluateButton } from '../components/EvaluateButton';
 import { Button } from '../components/Button';
 import { useState } from 'react';
+import { submissionService } from '../services/submission';
+import type { SubmissionRequest, Repository } from '../types/submission';
 
 export function PersonalPage() {
   const [projectName, setProjectName] = useState('');
   const [description, setDescription] = useState('');
   const [activeButtons, setActiveButtons] = useState<Set<string>>(new Set());
-  const [frontendRepo, setFrontendRepo] = useState('');
-  const [backendRepo, setBackendRepo] = useState('');
-  const [otherRepo, setOtherRepo] = useState('');
+  const [repositories, setRepositories] = useState<Repository[]>([
+    { type: '', repo_url: '' },
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButtons((prev) => {
@@ -26,14 +30,71 @@ export function PersonalPage() {
     });
   };
 
+  const handleAddRepository = () => {
+    setRepositories([...repositories, { type: '', repo_url: '' }]);
+  };
+
+  const handleRemoveRepository = (index: number) => {
+    if (repositories.length > 1) {
+      setRepositories(repositories.filter((_, i) => i !== index));
+    }
+  };
+
+  const handleRepositoryChange = (
+    index: number,
+    field: keyof Repository,
+    value: string
+  ) => {
+    const newRepositories = [...repositories];
+    newRepositories[index] = { ...newRepositories[index], [field]: value };
+    setRepositories(newRepositories);
+  };
+
   const isFormValid = () => {
+    const hasValidRepositories = repositories.some(
+      (repo) => repo.type.trim() !== '' && repo.repo_url.trim() !== ''
+    );
     return (
       projectName.trim() !== '' &&
       description.trim() !== '' &&
-      frontendRepo.trim() !== '' &&
-      backendRepo.trim() !== '' &&
+      hasValidRepositories &&
       activeButtons.size > 0
     );
+  };
+
+  const handleSubmit = async () => {
+    if (!isFormValid()) return;
+
+    setError('');
+    setIsLoading(true);
+
+    const data: SubmissionRequest = {
+      team_name: 'default',
+      title: projectName,
+      description: description,
+      competition_name: 'default',
+      repositories: repositories.filter(
+        (repo) => repo.type.trim() !== '' && repo.repo_url.trim() !== ''
+      ),
+      evaluation_criteria: Array.from(activeButtons),
+    };
+
+    try {
+      await submissionService.submit(data);
+      alert('프로젝트가 성공적으로 제출되었습니다!');
+      // Reset form
+      setProjectName('');
+      setDescription('');
+      setActiveButtons(new Set());
+      setRepositories([{ type: '', repo_url: '' }]);
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message: string } } };
+      setError(
+        error.response?.data?.message || '프로젝트 제출 중 오류가 발생했습니다.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -46,6 +107,12 @@ export function PersonalPage() {
           <br />
           설명은 구체적일수록 꼼꼼한 평가를 받을 수 있습니다.
         </GuidingBox>
+
+        {error && (
+          <div className='bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative'>
+            {error}
+          </div>
+        )}
 
         <div className='max-w-2xl space-y-6'>
           <InputBox
@@ -101,45 +168,68 @@ export function PersonalPage() {
         </div>
 
         <div className='space-y-6'>
-          <div className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0] flex items-start'>
-            <span className='align-top'>레포지토리</span>
-            <span className='text-red-500 text-[8px] ml-1 leading-none align-top'>
-              *
-            </span>
+          <div className='flex justify-between items-center'>
+            <div className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0] flex items-start'>
+              <span className='align-top'>레포지토리</span>
+              <span className='text-red-500 text-[8px] ml-1 leading-none align-top'>
+                *
+              </span>
+            </div>
+            <button
+              type='button'
+              onClick={handleAddRepository}
+              className='inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+            >
+              저장소 추가
+            </button>
           </div>
 
           <div className='space-y-4'>
-            <InputBox
-              title='프론트엔드 레포지토리'
-              value={frontendRepo}
-              onChange={setFrontendRepo}
-              required
-              placeholder='프론트엔드 레포지토리 URL을 입력해주세요.'
-              maxLength={200}
-            />
-
-            <InputBox
-              title='백엔드 레포지토리'
-              value={backendRepo}
-              onChange={setBackendRepo}
-              required
-              placeholder='백엔드 레포지토리 URL을 입력해주세요.'
-              maxLength={200}
-            />
-
-            <InputBox
-              title='기타 레포지토리'
-              value={otherRepo}
-              onChange={setOtherRepo}
-              placeholder='기타 레포지토리 URL을 입력해주세요. (선택사항)'
-              maxLength={200}
-            />
+            {repositories.map((repo, index) => (
+              <div key={index} className='flex gap-4'>
+                <div className='flex-1'>
+                  <InputBox
+                    title='저장소 타입'
+                    value={repo.type}
+                    onChange={(value) =>
+                      handleRepositoryChange(index, 'type', value)
+                    }
+                    placeholder='저장소 타입을 입력해주세요.'
+                    required
+                  />
+                </div>
+                <div className='flex-1'>
+                  <InputBox
+                    title='저장소 URL'
+                    value={repo.repo_url}
+                    onChange={(value) =>
+                      handleRepositoryChange(index, 'repo_url', value)
+                    }
+                    placeholder='저장소 URL을 입력해주세요.'
+                    required
+                  />
+                </div>
+                {repositories.length > 1 && (
+                  <button
+                    type='button'
+                    onClick={() => handleRemoveRepository(index)}
+                    className='self-end mb-2 inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
         <div className='flex justify-start mt-8'>
-          <Button type='submit' disabled={!isFormValid()}>
-            Snap my code!
+          <Button
+            type='submit'
+            disabled={!isFormValid() || isLoading}
+            onClick={handleSubmit}
+          >
+            {isLoading ? '제출 중...' : 'Snap my code!'}
           </Button>
         </div>
       </div>

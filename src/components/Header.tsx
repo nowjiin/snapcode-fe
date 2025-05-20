@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
 
 export function Header() {
+  const { isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -65,26 +67,29 @@ export function Header() {
             >
               Personal
             </Link>
-            <Link
-              to='/mypage'
-              className='flex items-center font-pretendard text-gray-700 hover:text-indigo-600 px-2 py-2 text-sm font-bold transition-colors duration-200'
-            >
-              <svg
-                className='w-5 h-5 mr-1'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-                xmlns='http://www.w3.org/2000/svg'
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to='/mypage'
+                  className='font-pretendard text-gray-700 hover:text-indigo-600 px-2 py-2 text-sm font-bold transition-colors duration-200'
+                >
+                  MyPage
+                </Link>
+                <button
+                  onClick={logout}
+                  className='font-pretendard text-gray-700 hover:text-indigo-600 px-2 py-2 text-sm font-bold transition-colors duration-200'
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                to='/login'
+                className='font-pretendard text-gray-700 hover:text-indigo-600 px-2 py-2 text-sm font-bold transition-colors duration-200'
               >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-                />
-              </svg>
-              MyPage
-            </Link>
+                Login
+              </Link>
+            )}
           </div>
         </div>
 
@@ -104,26 +109,43 @@ export function Header() {
               >
                 Personal
               </Link>
-              <Link
-                to='/mypage'
-                className='flex items-center font-pretendard text-gray-700 hover:text-indigo-600 px-3 py-2 text-base font-bold transition-colors duration-200'
-              >
-                <svg
-                  className='w-5 h-5 mr-2'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                  xmlns='http://www.w3.org/2000/svg'
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to='/mypage'
+                    className='flex items-center font-pretendard text-gray-700 hover:text-indigo-600 px-3 py-2 text-base font-bold transition-colors duration-200'
+                  >
+                    <svg
+                      className='w-5 h-5 mr-2'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                      xmlns='http://www.w3.org/2000/svg'
+                    >
+                      <path
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                        strokeWidth={2}
+                        d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+                      />
+                    </svg>
+                    MyPage
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className='block w-full text-left font-pretendard text-gray-700 hover:text-indigo-600 px-3 py-2 text-base font-bold transition-colors duration-200'
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to='/login'
+                  className='block font-pretendard text-gray-700 hover:text-indigo-600 px-3 py-2 text-base font-bold transition-colors duration-200'
                 >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
-                  />
-                </svg>
-                MyPage
-              </Link>
+                  Login
+                </Link>
+              )}
             </div>
           </div>
         )}
