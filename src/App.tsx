@@ -6,6 +6,8 @@ import { PersonalPage } from './pages/PersonalPage';
 import { LoginPage } from './pages/LoginPage';
 import { MyPage } from './pages/MyPage';
 import { SignUpPage } from './pages/SignUpPage';
+import { TestPage } from './pages/TestPage';
+import { AdminPage } from './pages/AdminPage';
 
 const queryClient = new QueryClient();
 
@@ -16,10 +18,16 @@ export function App() {
         <Header />
         <Routes>
           <Route path='/' element={<HomePage />} />
-          <Route path='/personal' element={<PersonalPage />} />
+          {/* Login Page */}
           <Route path='/login' element={<LoginPage />} />
           <Route path='/signup' element={<SignUpPage />} />
-          <Route path='/mypage' element={<MyPage />} />
+          {/* My Page */}
+          <Route path='/my' element={<MyPage />} />
+          {/* Personal Page */}
+          <Route path='/personal' element={<PersonalPage />} />
+          {/* Test Page */}
+          <Route path='/test' element={<TestPage />} />
+          <Route path='/admin' element={<AdminPage />} />
         </Routes>
       </Router>
     </QueryClientProvider>
