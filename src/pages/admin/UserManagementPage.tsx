@@ -58,13 +58,16 @@ export function UserManagementPage() {
     },
   });
 
-  const handleCreateUser = async (data: CreateUserRequest) => {
-    await createUserMutation.mutateAsync(data);
-  };
-
-  const handleUpdateUser = async (data: UpdateUserRequest) => {
+  const handleFormSubmit = async (
+    data: CreateUserRequest | UpdateUserRequest
+  ) => {
     if (selectedUser) {
-      await updateUserMutation.mutateAsync({ userId: selectedUser.id, data });
+      await updateUserMutation.mutateAsync({
+        userId: selectedUser.id,
+        data: data as UpdateUserRequest,
+      });
+    } else {
+      await createUserMutation.mutateAsync(data as CreateUserRequest);
     }
   };
 
@@ -155,7 +158,7 @@ export function UserManagementPage() {
             </h2>
             <UserForm
               initialData={selectedUser || undefined}
-              onSubmit={selectedUser ? handleUpdateUser : handleCreateUser}
+              onSubmit={handleFormSubmit}
               onCancel={() => {
                 setIsModalOpen(false);
                 setSelectedUser(null);

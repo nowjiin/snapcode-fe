@@ -1,14 +1,29 @@
-import { Routes, Route } from 'react-router-dom';
-import { PersonalPage } from '../pages/PersonalPage';
-import { HomePage } from '../pages/HomePage';
+import { createBrowserRouter } from 'react-router-dom';
+import { AdminPage } from '../pages/admin/AdminPage';
+import { LoginPage } from '../pages/auth/LoginPage';
+import { SignUpPage } from '../pages/auth/SignUpPage';
+import { HomePage } from '../pages/home/HomePage';
+import { PersonalPage } from '../pages/personal/PersonalPage';
 
-export function AppRoutes() {
-  return (
-    <Routes>
-      <Route path='/' element={<HomePage />} />
-      <Route path='/business' element={<div>Business Page</div>} />
-      <Route path='/personal' element={<PersonalPage />} />
-      <Route path='/mypage' element={<div>My Page</div>} />
-    </Routes>
-  );
-}
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <HomePage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/register',
+    element: <SignUpPage />,
+  },
+  {
+    path: '/admin',
+    element: <AdminPage />,
+  },
+  {
+    path: '/personal',
+    element: <PersonalPage />,
+  },
+]);
