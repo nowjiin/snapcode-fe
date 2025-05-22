@@ -3,13 +3,13 @@ import {
   submissionService,
   type CreateSubmissionRequest,
   type Repository,
-} from '../services/submissionService';
-import { Title } from '../components/Title';
-import { InputBox } from '../components/InputBox';
-import { DescriptionInput } from '../components/DescriptionInput';
-import { GuidingBox } from '../components/GuidingBox';
-import { EvaluateButton } from '../components/EvaluateButton';
-import { Button } from '../components/Button';
+} from '../../services/submissionService';
+import { Title } from '../../components/Title';
+import { InputBox } from '../../components/InputBox';
+import { DescriptionInput } from '../../components/DescriptionInput';
+import { GuidingBox } from '../../components/GuidingBox';
+import { EvaluateButton } from '../../components/EvaluateButton';
+import { Button } from '../../components/Button';
 
 export function PersonalPage() {
   const [formData, setFormData] = useState<CreateSubmissionRequest>({

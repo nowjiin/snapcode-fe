@@ -1,13 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Header } from './components/Header';
-import { HomePage } from './pages/HomePage';
-import { PersonalPage } from './pages/PersonalPage';
-import { LoginPage } from './pages/LoginPage';
-import { MyPage } from './pages/MyPage';
-import { SignUpPage } from './pages/SignUpPage';
-import { TestPage } from './pages/TestPage';
-import { AdminPage } from './pages/AdminPage';
+import { HomePage } from './pages/home/HomePage';
+import { PersonalPage } from './pages/personal/PersonalPage';
+import { MyPage } from './pages/my/MyPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { SignUpPage } from './pages/auth/SignUpPage';
+import { TestPage } from './pages/test/TestPage';
+import { AdminPage } from './pages/admin/AdminPage';
 
 const queryClient = new QueryClient();
 
@@ -22,7 +22,7 @@ export function App() {
           <Route path='/login' element={<LoginPage />} />
           <Route path='/signup' element={<SignUpPage />} />
           {/* My Page */}
-          <Route path='/my' element={<MyPage />} />
+          <Route path='/mypage' element={<MyPage />} />
           {/* Personal Page */}
           <Route path='/personal' element={<PersonalPage />} />
           {/* Test Page */}

@@ -4,11 +4,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        sans: ['Pretendard', 'sans-serif'],
         pretendard: ['Pretendard', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 1s ease-out',
         float: 'float 6s ease-in-out infinite',
+        ping: 'ping 1.5s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -18,6 +20,10 @@ export default {
         float: {
           '0%, 100%': { transform: 'translate(-50%, -50%)' },
           '50%': { transform: 'translate(-50%, -55%)' },
+        },
+        ping: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' },
         },
       },
     },

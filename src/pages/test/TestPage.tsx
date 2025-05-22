@@ -4,7 +4,7 @@ import {
   type TestUser,
   type TestSubmission,
   type GradingQueueItem,
-} from '../services/test';
+} from '../../services/test';
 
 export function TestPage() {
   const [users, setUsers] = useState<TestUser[]>([]);

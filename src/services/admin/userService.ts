@@ -1,56 +1,58 @@
 import { axiosInstance } from '../../lib/axios';
+import type {
+  User,
+  CreateUserRequest,
+  UpdateUserRequest,
+  AssignRoleRequest,
+} from '../../types/admin';
 
-export interface AdminUser {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-}
-
-export interface AssignRoleRequest {
-  user_id: number;
-  role: string;
-}
-
-export const adminUserService = {
-  async getUsers(): Promise<AdminUser[]> {
-    const response = await axiosInstance.get<AdminUser[]>(
-      '/api/v1/admin/users'
-    );
-    return response.data;
+export const userService = {
+  // Get all users
+  getUsers: async (): Promise<User[]> => {
+    const response = await axiosInstance.get<User[]>('/api/v1/admin/users');
+    return response.data || [];
   },
 
-  async createUser(data: Omit<AdminUser, 'id'>): Promise<AdminUser> {
-    const response = await axiosInstance.post<AdminUser>(
-      '/api/v1/admin/users',
-      data
-    );
-    return response.data;
-  },
-
-  async getUser(userId: number): Promise<AdminUser> {
-    const response = await axiosInstance.get<AdminUser>(
+  // Get single user
+  getUser: async (userId: number): Promise<User> => {
+    const response = await axiosInstance.get<User>(
       `/api/v1/admin/users/${userId}`
     );
     return response.data;
   },
 
-  async updateUser(
-    userId: number,
-    data: Partial<AdminUser>
-  ): Promise<AdminUser> {
-    const response = await axiosInstance.put<AdminUser>(
-      `/api/v1/admin/users/${userId}`,
-      data
+  // Create user
+  createUser: async (userData: CreateUserRequest): Promise<User> => {
+    const response = await axiosInstance.post<User>(
+      '/api/v1/admin/users',
+      userData
     );
     return response.data;
   },
 
-  async deleteUser(userId: number): Promise<void> {
+  // Update user
+  updateUser: async (
+    userId: number,
+    userData: UpdateUserRequest
+  ): Promise<User> => {
+    const response = await axiosInstance.put<User>(
+      `/api/v1/admin/users/${userId}`,
+      userData
+    );
+    return response.data;
+  },
+
+  // Delete user
+  deleteUser: async (userId: number): Promise<void> => {
     await axiosInstance.delete(`/api/v1/admin/users/${userId}`);
   },
 
-  async assignRole(data: AssignRoleRequest): Promise<void> {
-    await axiosInstance.post('/api/v1/admin/assign-role', data);
+  // Assign role
+  assignRole: async (roleData: AssignRoleRequest): Promise<User> => {
+    const response = await axiosInstance.post<User>(
+      '/api/v1/admin/assign-role',
+      roleData
+    );
+    return response.data;
   },
 };
