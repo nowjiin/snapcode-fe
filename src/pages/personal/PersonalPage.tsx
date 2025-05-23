@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   submissionService,
   type CreateSubmissionRequest,
@@ -10,8 +11,10 @@ import { DescriptionInput } from '../../components/DescriptionInput';
 import { GuidingBox } from '../../components/GuidingBox';
 import { EvaluateButton } from '../../components/EvaluateButton';
 import { Button } from '../../components/Button';
+import { TerminalLoader } from '../../components/loaders/TerminalLoader';
 
 export function PersonalPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<CreateSubmissionRequest>({
     team_name: '',
     title: '',
@@ -22,8 +25,16 @@ export function PersonalPage() {
   });
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [activeButtons, setActiveButtons] = useState<Set<string>>(new Set());
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButtons((prev) => {
@@ -63,22 +74,44 @@ export function PersonalPage() {
     try {
       setLoading(true);
       setError('');
+
+      // Validate repository URLs
+      const invalidRepo = formData.repositories.find(
+        (repo) => !isValidUrl(repo.repo_url)
+      );
+      if (invalidRepo) {
+        setError('올바른 URL 형식을 입력해주세요.');
+        setLoading(false);
+        return;
+      }
+
+      // Convert Set to Array for evaluation_criteria
+      const evaluationCriteria = Array.from(activeButtons);
+
       const submissionData = {
-        ...formData,
-        evaluation_criteria: Array.from(activeButtons),
-      };
-      await submissionService.createSubmission(submissionData);
-      setSuccess(true);
-      // Reset form
-      setFormData({
-        team_name: '',
-        title: '',
-        description: '',
+        team_name: 'string',
+        title: formData.title,
+        description: formData.description,
         competition_name: 'default',
-        repositories: [{ type: '', repo_url: '' }],
-        evaluation_criteria: [],
-      });
-      setActiveButtons(new Set());
+        repositories: formData.repositories.map((repo) => ({
+          type: repo.type || 'string',
+          repo_url: repo.repo_url,
+        })),
+        evaluation_criteria: evaluationCriteria,
+      };
+
+      // Create a minimum delay promise
+      const minimumDelay = new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Create the submission promise
+      const submissionPromise =
+        submissionService.createSubmission(submissionData);
+
+      // Wait for both the minimum delay and submission to complete
+      await Promise.all([minimumDelay, submissionPromise]);
+
+      // Navigate to complete page with submission data
+      navigate('/personal/complete', { state: { submissionData } });
     } catch (error: unknown) {
       console.error('Failed to submit:', error);
       setError('Failed to submit. Please try again.');
@@ -104,11 +137,7 @@ export function PersonalPage() {
           </div>
         )}
 
-        {success && (
-          <div className='bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded relative'>
-            Submission successful!
-          </div>
-        )}
+        {loading && <TerminalLoader status='제출중' />}
 
         <div className='max-w-2xl space-y-6'>
           <InputBox
@@ -147,19 +176,19 @@ export function PersonalPage() {
 
             <div className='flex gap-4'>
               <EvaluateButton
-                onClick={() => handleButtonClick('codeQuality')}
+                onClick={() => handleButtonClick('Code Quality')}
                 text='Code Quality'
-                isActive={activeButtons.has('codeQuality')}
+                isActive={activeButtons.has('Code Quality')}
               />
               <EvaluateButton
-                onClick={() => handleButtonClick('projectStructure')}
+                onClick={() => handleButtonClick('Project Structure')}
                 text='Project Structure'
-                isActive={activeButtons.has('projectStructure')}
+                isActive={activeButtons.has('Project Structure')}
               />
               <EvaluateButton
-                onClick={() => handleButtonClick('creativity')}
+                onClick={() => handleButtonClick('Creativity')}
                 text='Creativity'
-                isActive={activeButtons.has('creativity')}
+                isActive={activeButtons.has('Creativity')}
               />
             </div>
           </div>
@@ -175,9 +204,31 @@ export function PersonalPage() {
               <button
                 type='button'
                 onClick={addRepository}
-                className='inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+                className='inline-flex p-[11.226px_16.839px] items-center gap-[14.032px] rounded-[140.323px] border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)] text-[#6473A0] hover:bg-[rgba(67,67,67,0.08)] transition-all duration-200'
               >
-                저장소 추가
+                <div className='flex items-center gap-2'>
+                  <div className='w-6 h-6 rounded-full border-[0.702px] border-[#6473A0] flex items-center justify-center transition-transform duration-300 group-hover:rotate-90'>
+                    <svg
+                      width='12'
+                      height='12'
+                      viewBox='0 0 12 12'
+                      fill='none'
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='transition-transform duration-300'
+                    >
+                      <path
+                        d='M6 2.5V9.5M2.5 6H9.5'
+                        stroke='#6473A0'
+                        strokeWidth='1.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
+                      />
+                    </svg>
+                  </div>
+                  <span className='font-pretendard text-[15.435px] font-bold leading-[22.452px] tracking-[-0.386px] text-[#6473A0]'>
+                    저장소 추가
+                  </span>
+                </div>
               </button>
             </div>
 
@@ -202,7 +253,7 @@ export function PersonalPage() {
                       onChange={(value) =>
                         handleRepositoryChange(index, 'repo_url', value)
                       }
-                      placeholder='저장소 URL을 입력해주세요.'
+                      placeholder='https://example.com/'
                       required
                     />
                   </div>
@@ -221,7 +272,12 @@ export function PersonalPage() {
           </div>
 
           <div className='flex justify-start mt-8'>
-            <Button type='submit' disabled={loading} onClick={handleSubmit}>
+            <Button
+              type='submit'
+              disabled={loading}
+              onClick={handleSubmit}
+              className='w-[180px] h-[60px] text-[20px] p-[10px]'
+            >
               {loading ? '제출 중...' : 'Snap my code!'}
             </Button>
           </div>

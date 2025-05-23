@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Header } from './components/Header';
 import { HomePage } from './pages/home/HomePage';
 import { PersonalPage } from './pages/personal/PersonalPage';
+import { SubmissionCompletePage } from './pages/personal/SubmissionCompletePage';
 import { MyPage } from './pages/my/MyPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignUpPage } from './pages/auth/SignUpPage';
@@ -25,6 +26,10 @@ export function App() {
           <Route path='/mypage' element={<MyPage />} />
           {/* Personal Page */}
           <Route path='/personal' element={<PersonalPage />} />
+          <Route
+            path='/personal/complete'
+            element={<SubmissionCompletePage />}
+          />
           {/* Test Page */}
           <Route path='/test' element={<TestPage />} />
           <Route path='/admin' element={<AdminPage />} />
