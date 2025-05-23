@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface AuthFooterProps {
   question: string;
   linkText: string;
