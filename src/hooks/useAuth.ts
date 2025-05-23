@@ -1,7 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '../services/auth';
+import type { LoginResponse } from '../types/auth';
 
 export function useAuth() {
+  const queryClient = useQueryClient();
   const isAuthenticated = authService.isAuthenticated();
 
   const { data: role, isLoading } = useQuery({
@@ -10,9 +12,16 @@ export function useAuth() {
     enabled: isAuthenticated,
   });
 
+  const login = (data: LoginResponse) => {
+    authService.setAuthData(data);
+    // Invalidate and refetch user role
+    queryClient.invalidateQueries({ queryKey: ['userRole'] });
+  };
+
   const logout = () => {
     authService.logout();
     // Invalidate queries to force refetch
+    queryClient.invalidateQueries({ queryKey: ['userRole'] });
     window.location.href = '/login';
   };
 
@@ -20,6 +29,7 @@ export function useAuth() {
     isAuthenticated,
     role,
     isLoading,
+    login,
     logout,
   };
 }

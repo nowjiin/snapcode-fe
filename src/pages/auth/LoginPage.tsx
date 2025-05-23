@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/auth';
+import { useAuth } from '../../hooks/useAuth';
 import type { LoginRequest } from '../../types/auth';
+import { AuthTitle } from '../../components/auth/AuthTitle';
+import { AuthInput } from '../../components/auth/AuthInput';
+import { AuthFooter } from '../../components/auth/AuthFooter';
+import { AuthButton } from '../../components/auth/AuthButton';
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,8 +27,8 @@ export function LoginPage() {
 
     try {
       const response = await authService.login(data);
-      authService.setAuthData(response);
-      navigate('/mypage');
+      login(response);
+      navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message: string } } };
       setError(
@@ -34,15 +40,13 @@ export function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
-      <div className='sm:mx-auto sm:w-full sm:max-w-md'>
-        <h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
-          Sign in to your account
-        </h2>
+    <div className='min-h-screen flex flex-col justify-center py-12 px-6'>
+      <div className='w-full max-w-[400px] mx-auto'>
+        <AuthTitle subtitle='로그인' />
       </div>
 
-      <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
-        <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
+      <div className='mt-8 w-full max-w-[400px] mx-auto'>
+        <div>
           {error && (
             <div className='mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative'>
               {error}
@@ -50,77 +54,36 @@ export function LoginPage() {
           )}
 
           <form className='space-y-6' onSubmit={handleSubmit}>
-            <div>
-              <label
-                htmlFor='email'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Email address
-              </label>
-              <div className='mt-1'>
-                <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
-                  required
-                  className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                />
-              </div>
-            </div>
+            <AuthInput
+              label='Email'
+              type='email'
+              name='email'
+              placeholder='Enter your email'
+              required
+              autoComplete='email'
+            />
+
+            <AuthInput
+              label='Password'
+              type='password'
+              name='password'
+              placeholder='Enter your password'
+              required
+              autoComplete='current-password'
+            />
 
             <div>
-              <label
-                htmlFor='password'
-                className='block text-sm font-medium text-gray-700'
-              >
-                Password
-              </label>
-              <div className='mt-1'>
-                <input
-                  id='password'
-                  name='password'
-                  type='password'
-                  autoComplete='current-password'
-                  required
-                  className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm'
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type='submit'
-                disabled={isLoading}
-                className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed'
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </button>
+              <AuthButton type='submit' isLoading={isLoading}>
+                로그인
+              </AuthButton>
             </div>
           </form>
 
-          <div className='mt-6'>
-            <div className='relative'>
-              <div className='absolute inset-0 flex items-center'>
-                <div className='w-full border-t border-gray-300' />
-              </div>
-              <div className='relative flex justify-center text-sm'>
-                <span className='px-2 bg-white text-gray-500'>Or</span>
-              </div>
-            </div>
-
-            <div className='mt-6 text-center'>
-              <p className='text-sm text-gray-600'>
-                Don't have an account?{' '}
-                <a
-                  href='/signup'
-                  className='font-medium text-indigo-600 hover:text-indigo-500'
-                >
-                  Sign up now
-                </a>
-              </p>
-            </div>
-          </div>
+          <AuthFooter
+            question='아직 계정이 없으신가요?'
+            linkText='회원가입하기'
+            linkHref='/signup'
+          />
         </div>
       </div>
     </div>
