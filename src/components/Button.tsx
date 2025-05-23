@@ -20,7 +20,8 @@ export function Button({
       disabled={disabled}
       className={`
         flex justify-center items-center gap-[10px]
-        rounded-[14px] font-pretendard font-semibold leading-[22.452px]
+        min-w-[180px] min-h-[60px] px-6 py-3
+        rounded-[14px] font-pretendard text-[20px] font-semibold leading-[22.452px]
         tracking-[-0.6px] transition-all duration-200
         ${
           disabled

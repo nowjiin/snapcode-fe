@@ -1,9 +1,5 @@
-import { format } from 'date-fns';
-
-interface Repository {
-  type: string;
-  repo_url: string;
-}
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../Button';
 
 interface SubmissionCardProps {
   submission: {
@@ -13,11 +9,13 @@ interface SubmissionCardProps {
     description: string;
     submitted_at: string;
     status: string;
-    repositories: Repository[];
+    repositories: string[];
   };
 }
 
 export function SubmissionCard({ submission }: SubmissionCardProps) {
+  const navigate = useNavigate();
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'submitted':
@@ -48,14 +46,25 @@ export function SubmissionCard({ submission }: SubmissionCardProps) {
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  };
+
   return (
-    <div className='bg-white rounded-lg shadow-md p-6 mb-4'>
-      <div className='flex justify-between items-start mb-4'>
+    <div className='p-6 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)] space-y-4'>
+      <div className='flex justify-between items-start'>
         <div>
-          <h3 className='text-xl font-semibold text-gray-900'>
+          <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
             {submission.title}
           </h3>
-          <p className='text-sm text-gray-500'>팀: {submission.team_name}</p>
+          <p className='mt-1 text-[#6473A0]'>{submission.team_name}</p>
         </div>
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
@@ -66,28 +75,20 @@ export function SubmissionCard({ submission }: SubmissionCardProps) {
         </span>
       </div>
 
-      <p className='text-gray-700 mb-4'>{submission.description}</p>
+      <p className='text-[#6473A0] line-clamp-2'>{submission.description}</p>
 
-      <div className='mb-4'>
-        <h4 className='text-sm font-medium text-gray-900 mb-2'>저장소:</h4>
-        <div className='space-y-2'>
-          {submission.repositories.map((repo, index) => (
-            <a
-              key={index}
-              href={repo.repo_url}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='flex items-center text-sm text-blue-600 hover:text-blue-800'
-            >
-              <span className='mr-2'>{repo.type}</span>
-              <span className='truncate'>{repo.repo_url}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div className='text-sm text-gray-500'>
-        제출일: {format(new Date(submission.submitted_at), 'PPP')}
+      <div className='flex justify-between items-center'>
+        <p className='text-[#6473A0] text-sm'>
+          제출일: {formatDate(submission.submitted_at)}
+        </p>
+        <Button
+          onClick={() =>
+            navigate(`/mypage/submissions/${submission.submission_id}`)
+          }
+          className='w-[120px] h-[40px] text-[16px]'
+        >
+          상세보기
+        </Button>
       </div>
     </div>
   );

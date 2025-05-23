@@ -4,7 +4,7 @@ import { Header } from './components/Header';
 import { HomePage } from './pages/home/HomePage';
 import { PersonalPage } from './pages/personal/PersonalPage';
 import { SubmissionCompletePage } from './pages/personal/SubmissionCompletePage';
-import { MyPage } from './pages/my/MyPage';
+import { MyPage } from './pages/mypage/MyPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { SignUpPage } from './pages/auth/SignUpPage';
 import { TestPage } from './pages/test/TestPage';
@@ -24,6 +24,10 @@ export function App() {
           <Route path='/signup' element={<SignUpPage />} />
           {/* My Page */}
           <Route path='/mypage' element={<MyPage />} />
+          <Route
+            path='/mypage/submissions/:submissionId'
+            element={<MyPage />}
+          />
           {/* Personal Page */}
           <Route path='/personal' element={<PersonalPage />} />
           <Route
