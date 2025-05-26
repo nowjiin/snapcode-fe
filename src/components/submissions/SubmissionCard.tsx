@@ -1,22 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
+import type { SubmissionListItem } from '../../services/submissionService';
 
 interface SubmissionCardProps {
-  submission: {
-    submission_id: number;
-    team_name: string;
-    title: string;
-    description: string;
-    submitted_at: string;
-    status: string;
-    repositories: string[];
-  };
+  submission: SubmissionListItem;
 }
 
 export function SubmissionCard({ submission }: SubmissionCardProps) {
   const navigate = useNavigate();
 
   const getStatusColor = (status: string) => {
+    if (!status || typeof status !== 'string') {
+      return 'bg-gray-100 text-gray-800';
+    }
     switch (status.toLowerCase()) {
       case 'submitted':
         return 'bg-blue-100 text-blue-800';
@@ -32,6 +28,9 @@ export function SubmissionCard({ submission }: SubmissionCardProps) {
   };
 
   const getStatusText = (status: string) => {
+    if (!status || typeof status !== 'string') {
+      return '알 수 없음';
+    }
     switch (status.toLowerCase()) {
       case 'submitted':
         return '제출됨';

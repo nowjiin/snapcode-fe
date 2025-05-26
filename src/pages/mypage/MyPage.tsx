@@ -31,10 +31,36 @@ export function MyPage() {
       setLoading(true);
       setError(null);
       const response = await submissionService.getMySubmissions();
-      const submissionsArray = Array.isArray(response) ? response : [response];
-      setSubmissions(submissionsArray);
+
+      // API 응답 처리: 배열 또는 단일 객체
+      if (Array.isArray(response)) {
+        // 배열인 경우 그대로 설정
+        setSubmissions(response);
+      } else if (
+        response &&
+        typeof response === 'object' &&
+        'submission_id' in response
+      ) {
+        // 단일 제출 객체인 경우 배열로 감싸기
+        setSubmissions([response as SubmissionListItem]);
+      } else {
+        // 에러 메시지나 다른 형태의 응답인 경우 빈 배열
+        setSubmissions([]);
+      }
       setHasFetched(true);
-    } catch (err) {
+    } catch (err: unknown) {
+      // 404나 다른 에러 응답에서 메시지가 있는 경우 처리
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as {
+          response?: { data?: { message?: string } };
+        };
+        if (axiosError.response?.data?.message?.includes('아직 제출한')) {
+          // "아직 제출한 프로젝트가 없습니다" 메시지인 경우
+          setSubmissions([]);
+          setHasFetched(true);
+          return;
+        }
+      }
       setError('제출 내역을 불러오는데 실패했습니다.');
       console.error('Failed to fetch submissions:', err);
     } finally {
@@ -102,12 +128,7 @@ export function MyPage() {
 
         {selectedSubmission ? (
           <SubmissionDetail
-            submission={{
-              ...selectedSubmission,
-              evaluation_result: selectedSubmission.evaluation_result as
-                | string[]
-                | null,
-            }}
+            submission={selectedSubmission}
             onBack={handleBack}
           />
         ) : (

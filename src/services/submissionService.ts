@@ -14,6 +14,21 @@ export interface CreateSubmissionRequest {
   evaluation_criteria: string[];
 }
 
+export interface CriteriaResult {
+  name: string;
+  score: number;
+  feedback: string;
+  improvements: string[];
+  strengths: string[];
+  weaknesses: string[];
+}
+
+export interface EvaluationResult {
+  status: string;
+  total_score: number | null;
+  criteria_results: CriteriaResult[];
+}
+
 export interface Submission {
   submission_id: number;
   team_name: string;
@@ -24,9 +39,9 @@ export interface Submission {
   status: string;
   score: number | null;
   feedback: string | null;
-  repositories: string[];
+  repositories: Repository[];
   evaluation_criteria: string[];
-  evaluation_result: Record<string, unknown> | null;
+  evaluation_result: EvaluationResult | null;
 }
 
 export interface SubmissionListItem {
@@ -36,7 +51,7 @@ export interface SubmissionListItem {
   description: string;
   submitted_at: string;
   status: string;
-  repositories: string[];
+  repositories: Repository[];
 }
 
 class SubmissionService {
@@ -50,10 +65,10 @@ class SubmissionService {
     return response.data;
   }
 
-  async getMySubmissions(): Promise<SubmissionListItem[]> {
-    const response = await axiosInstance.get<SubmissionListItem[]>(
-      `${this.baseUrl}/submissions/me`
-    );
+  async getMySubmissions(): Promise<SubmissionListItem[] | SubmissionListItem> {
+    const response = await axiosInstance.get<
+      SubmissionListItem[] | SubmissionListItem
+    >(`${this.baseUrl}/submissions/me`);
     return response.data;
   }
 

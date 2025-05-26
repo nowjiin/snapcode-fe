@@ -1,21 +1,9 @@
 import { Button } from '../Button';
 import { EvaluateButton } from '../EvaluateButton';
+import type { Submission } from '../../services/submissionService';
 
 interface SubmissionDetailProps {
-  submission: {
-    submission_id: number;
-    team_name: string;
-    title: string;
-    description: string;
-    competition_name: string;
-    submitted_at: string;
-    status: string;
-    score: number | null;
-    feedback: string | null;
-    repositories: string[];
-    evaluation_criteria: string[];
-    evaluation_result: string[] | null;
-  };
+  submission: Submission;
   onBack: () => void;
 }
 
@@ -34,6 +22,10 @@ export function SubmissionDetail({
     }).format(date);
   };
 
+  const hasEvaluationResults =
+    submission.evaluation_result?.criteria_results &&
+    submission.evaluation_result.criteria_results.length > 0;
+
   return (
     <div className='space-y-6'>
       <div className='flex justify-between items-center'>
@@ -45,7 +37,7 @@ export function SubmissionDetail({
         </Button>
       </div>
 
-      <div className='space-y-4'>
+      <div className='space-y-6'>
         <div>
           <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
             서비스명
@@ -90,39 +82,158 @@ export function SubmissionDetail({
                 key={index}
                 className='p-4 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'
               >
+                <div className='flex items-center gap-2 mb-2'>
+                  <span className='px-2 py-1 text-xs rounded bg-[#6473A0] text-white font-medium'>
+                    {repo.type}
+                  </span>
+                </div>
                 <a
-                  href={repo}
+                  href={repo.repo_url}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='text-[#6473A0] break-all hover:underline'
                 >
-                  {repo}
+                  {repo.repo_url}
                 </a>
               </div>
             ))}
           </div>
         </div>
 
-        {submission.status === 'completed' && (
-          <>
-            <div>
-              <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
-                평가 점수
-              </h3>
-              <p className='mt-1 text-[#6473A0]'>{submission.score}점</p>
-            </div>
+        {/* 평가 상태 */}
+        {submission.evaluation_result?.status && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+              평가 상태
+            </h3>
+            <p className='mt-1 text-[#6473A0]'>
+              {submission.evaluation_result.status === 'waiting'
+                ? '평가 대기중'
+                : submission.evaluation_result.status === 'completed'
+                ? '평가 완료'
+                : submission.evaluation_result.status}
+            </p>
+          </div>
+        )}
 
-            {submission.feedback && (
-              <div>
-                <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
-                  피드백
-                </h3>
-                <p className='mt-1 text-[#6473A0] whitespace-pre-wrap'>
-                  {submission.feedback}
-                </p>
-              </div>
-            )}
-          </>
+        {/* 총 점수 */}
+        {(submission.score !== null ||
+          submission.evaluation_result?.total_score !== null) && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+              총 점수
+            </h3>
+            <p className='mt-1 text-[#6473A0] text-2xl font-semibold'>
+              {submission.score || submission.evaluation_result?.total_score}점
+            </p>
+          </div>
+        )}
+
+        {/* 상세 평가 결과 */}
+        {hasEvaluationResults && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0] mb-4'>
+              상세 평가 결과
+            </h3>
+            <div className='space-y-4'>
+              {submission.evaluation_result!.criteria_results.map(
+                (result, index) => (
+                  <div
+                    key={index}
+                    className='p-4 rounded-lg border border-[#6473A0] bg-white/50'
+                  >
+                    <div className='flex justify-between items-center mb-3'>
+                      <h4 className='font-pretendard text-[18px] font-medium text-[#6473A0]'>
+                        {result.name}
+                      </h4>
+                      <span className='px-3 py-1 rounded-full bg-[#6473A0] text-white font-medium'>
+                        {result.score}점
+                      </span>
+                    </div>
+
+                    {result.feedback && (
+                      <div className='mb-3'>
+                        <h5 className='font-medium text-[#6473A0] mb-1'>
+                          총평
+                        </h5>
+                        <p className='text-[#6473A0] text-sm leading-relaxed'>
+                          {result.feedback}
+                        </p>
+                      </div>
+                    )}
+
+                    {result.strengths && result.strengths.length > 0 && (
+                      <div className='mb-3'>
+                        <h5 className='font-medium text-green-600 mb-2'>
+                          ✅ 강점
+                        </h5>
+                        <ul className='space-y-1'>
+                          {result.strengths.map((strength, idx) => (
+                            <li
+                              key={idx}
+                              className='text-sm text-[#6473A0] leading-relaxed pl-2 border-l-2 border-green-200'
+                            >
+                              {strength}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {result.weaknesses && result.weaknesses.length > 0 && (
+                      <div className='mb-3'>
+                        <h5 className='font-medium text-orange-600 mb-2'>
+                          ⚠️ 개선점
+                        </h5>
+                        <ul className='space-y-1'>
+                          {result.weaknesses.map((weakness, idx) => (
+                            <li
+                              key={idx}
+                              className='text-sm text-[#6473A0] leading-relaxed pl-2 border-l-2 border-orange-200'
+                            >
+                              {weakness}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {result.improvements && result.improvements.length > 0 && (
+                      <div>
+                        <h5 className='font-medium text-blue-600 mb-2'>
+                          💡 개선 제안
+                        </h5>
+                        <ul className='space-y-1'>
+                          {result.improvements.map((improvement, idx) => (
+                            <li
+                              key={idx}
+                              className='text-sm text-[#6473A0] leading-relaxed pl-2 border-l-2 border-blue-200'
+                            >
+                              {improvement}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* 전체 피드백 (관리자가 허용한 경우에만 표시) */}
+        {submission.feedback && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+              전체 피드백
+            </h3>
+            <div className='mt-2 p-4 rounded-lg border border-[#6473A0] bg-blue-50/50'>
+              <p className='text-[#6473A0] whitespace-pre-wrap leading-relaxed'>
+                {submission.feedback}
+              </p>
+            </div>
+          </div>
         )}
 
         <div>
