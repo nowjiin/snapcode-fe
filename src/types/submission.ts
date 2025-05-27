@@ -9,7 +9,7 @@ export interface EvaluationCriteria {
 }
 
 export interface SubmissionRequest {
-  team_name?: string;
+  team_name: string | null;
   title: string;
   description: string;
   competition_name?: string;

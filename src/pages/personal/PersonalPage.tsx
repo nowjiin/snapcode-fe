@@ -16,7 +16,7 @@ import { TerminalLoader } from '../../components/loaders/TerminalLoader';
 export function PersonalPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<CreateSubmissionRequest>({
-    team_name: '',
+    team_name: null,
     title: '',
     description: '',
     competition_name: 'default',
@@ -89,7 +89,7 @@ export function PersonalPage() {
       const evaluationCriteria = Array.from(activeButtons);
 
       const submissionData = {
-        team_name: 'string',
+        team_name: null,
         title: formData.title,
         description: formData.description,
         competition_name: 'default',

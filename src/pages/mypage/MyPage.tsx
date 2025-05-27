@@ -32,19 +32,15 @@ export function MyPage() {
       setError(null);
       const response = await submissionService.getMySubmissions();
 
-      // API 응답 처리: 배열 또는 단일 객체
-      if (Array.isArray(response)) {
-        // 배열인 경우 그대로 설정
-        setSubmissions(response);
-      } else if (
+      // 새로운 API 응답 구조: { submissions: [...] }
+      if (
         response &&
-        typeof response === 'object' &&
-        'submission_id' in response
+        response.submissions &&
+        Array.isArray(response.submissions)
       ) {
-        // 단일 제출 객체인 경우 배열로 감싸기
-        setSubmissions([response as SubmissionListItem]);
+        setSubmissions(response.submissions);
       } else {
-        // 에러 메시지나 다른 형태의 응답인 경우 빈 배열
+        // 응답이 예상한 형태가 아닌 경우 빈 배열
         setSubmissions([]);
       }
       setHasFetched(true);

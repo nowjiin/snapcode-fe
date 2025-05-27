@@ -45,12 +45,26 @@ export function SubmissionDetail({
           <p className='mt-1 text-[#6473A0]'>{submission.title}</p>
         </div>
 
-        <div>
-          <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
-            팀명
-          </h3>
-          <p className='mt-1 text-[#6473A0]'>{submission.team_name}</p>
-        </div>
+        {submission.team_name && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+              팀명
+            </h3>
+            <p className='mt-1 text-[#6473A0]'>{submission.team_name}</p>
+          </div>
+        )}
+
+        {submission.competition_name &&
+          submission.competition_name !== 'default' && (
+            <div>
+              <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+                대회명
+              </h3>
+              <p className='mt-1 text-[#6473A0]'>
+                {submission.competition_name}
+              </p>
+            </div>
+          )}
 
         <div>
           <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
@@ -126,6 +140,20 @@ export function SubmissionDetail({
             <p className='mt-1 text-[#6473A0] text-2xl font-semibold'>
               {submission.score || submission.evaluation_result?.total_score}점
             </p>
+          </div>
+        )}
+
+        {/* 코드 요약 */}
+        {submission.evaluation_result?.code_summary && (
+          <div>
+            <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
+              코드 요약
+            </h3>
+            <div className='mt-2 p-4 rounded-lg border border-[#6473A0] bg-gray-50/50'>
+              <p className='text-[#6473A0] leading-relaxed'>
+                {submission.evaluation_result.code_summary}
+              </p>
+            </div>
           </div>
         )}
 

@@ -14,32 +14,33 @@ export interface GradingQueueItem {
   status: string;
 }
 
+const baseUrl = '/api/v1/admin';
+
 export const adminSubmissionService = {
   async getSubmissions(): Promise<AdminSubmission[]> {
     const response = await axiosInstance.get<AdminSubmission[]>(
-      '/api/v1/admin/admin/submissions'
+      `${baseUrl}/submissions`
     );
     return response.data;
   },
 
   async getGradingQueue(): Promise<GradingQueueItem[]> {
     const response = await axiosInstance.get<GradingQueueItem[]>(
-      '/api/v1/admin/admin/grading-queue'
+      `${baseUrl}/grading-queue`
     );
     return response.data;
   },
 
   async startGradingAll(): Promise<void> {
-    await axiosInstance.post('/api/v1/admin/admin/start-grading-all');
+    await axiosInstance.post(`${baseUrl}/start-grading-all`);
   },
 
   async updateSubmissionStatus(
     submissionId: number,
     status: string
   ): Promise<void> {
-    await axiosInstance.put(
-      `/api/v1/admin/admin/submissions/${submissionId}/status`,
-      { status }
-    );
+    await axiosInstance.put(`${baseUrl}/submissions/${submissionId}/status`, {
+      status,
+    });
   },
 };
