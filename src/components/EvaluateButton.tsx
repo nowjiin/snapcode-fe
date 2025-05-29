@@ -9,58 +9,58 @@ export function EvaluateButton({
   text = 'Code Quality',
   isActive = false,
 }: EvaluateButtonProps) {
+  // & 기준으로 텍스트를 두 줄로 나누고 & 제거
+  const textParts = text.split(' & ');
+  const hasMultipleParts = textParts.length > 1;
+
   return (
     <button
       onClick={onClick}
       className={`
-        inline-flex p-[11.226px_16.839px] flex-col items-start gap-[14.032px]
-        rounded-[140.323px] border-[0.702px] border-[#6473A0]
-        transition-all duration-200
+        relative px-4 py-3 rounded-lg border-2 
+        transition-all duration-200 w-full
+        font-pretendard text-sm font-medium
+        hover:scale-105 active:scale-95
+        ${hasMultipleParts ? 'min-h-[80px]' : 'min-h-[60px]'}
         ${
           isActive
-            ? 'bg-[#6473A0] text-white'
-            : 'bg-[rgba(67,67,67,0.04)] text-[#6473A0] hover:bg-[rgba(67,67,67,0.08)]'
+            ? 'bg-[#6473A0] border-[#6473A0] text-white shadow-lg'
+            : 'bg-white border-gray-200 text-gray-700 hover:border-[#6473A0] hover:text-[#6473A0] shadow-sm'
         }
-        group
       `}
     >
-      <div className='flex items-center gap-2'>
-        {/* Plus sign in circle */}
-        <div
-          className={`
-          w-6 h-6 rounded-full border-[0.702px] 
-          ${isActive ? 'border-white' : 'border-[#6473A0]'}
-          flex items-center justify-center
-          transition-transform duration-300
-          group-hover:rotate-90
-        `}
-        >
+      {/* 선택된 상태 체크 아이콘 */}
+      {isActive && (
+        <div className='absolute top-2 right-2'>
           <svg
-            width='12'
-            height='12'
-            viewBox='0 0 12 12'
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className='transition-transform duration-300'
           >
             <path
-              d='M6 2.5V9.5M2.5 6H9.5'
-              stroke={isActive ? 'white' : '#6473A0'}
-              strokeWidth='1.5'
+              d='M9 12l2 2 4-4'
+              stroke='white'
+              strokeWidth='2'
               strokeLinecap='round'
               strokeLinejoin='round'
             />
           </svg>
         </div>
-        {/* Text */}
-        <span
-          className={`
-          font-pretendard text-[15.435px] font-bold leading-[22.452px] tracking-[-0.386px]
-          ${isActive ? 'text-white' : 'text-[#6473A0]'}
-        `}
-        >
-          {text}
-        </span>
+      )}
+
+      <div className='text-center flex flex-col justify-center h-full'>
+        {hasMultipleParts ? (
+          <>
+            <span className='block leading-tight'>{textParts[0]}</span>
+            <span className='block text-xs opacity-80 mt-1'>
+              {textParts[1]}
+            </span>
+          </>
+        ) : (
+          <span className='block leading-tight'>{text}</span>
+        )}
       </div>
     </button>
   );
