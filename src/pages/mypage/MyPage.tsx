@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { SubmissionCard } from '../../components/submissions/SubmissionCard';
@@ -13,6 +13,7 @@ import {
 export function MyPage() {
   const navigate = useNavigate();
   const { submissionId } = useParams();
+  const location = useLocation();
   const [submissions, setSubmissions] = useState<SubmissionListItem[]>([]);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
@@ -25,6 +26,17 @@ export function MyPage() {
       fetchSubmissionDetail(submissionId);
     }
   }, [submissionId]);
+
+  // 페이지로 새로 이동할 때마다 상태 초기화 (헤더에서 마이페이지 클릭시)
+  useEffect(() => {
+    // URL 파라미터가 없고, 새로운 네비게이션인 경우 상태 초기화
+    if (!submissionId) {
+      setSubmissions([]);
+      setSelectedSubmission(null);
+      setHasFetched(false);
+      setError(null);
+    }
+  }, [location.key, submissionId]);
 
   const fetchSubmissions = async () => {
     try {
