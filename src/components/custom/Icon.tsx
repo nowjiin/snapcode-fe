@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface IconProps {
   name: string;
   size?: 'sm' | 'md' | 'lg';
@@ -11,7 +13,7 @@ export function Icon({ name, size = 'md', className = '' }: IconProps) {
     lg: 'w-8 h-8',
   };
 
-  const icons: { [key: string]: JSX.Element } = {
+  const icons: { [key: string]: React.ReactElement } = {
     chart: (
       <svg
         className={`${sizes[size]} ${className}`}
