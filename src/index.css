@@ -7,7 +7,7 @@
 @layer base {
   html,
   body {
-    @apply min-h-screen;
+    @apply min-h-screen overflow-x-hidden;
   }
 
   #root {
@@ -46,4 +46,18 @@
 
 .animate-pulse-slow {
   animation: float 6s ease-in-out infinite;
+}
+
+/* Seamless scrolling animation */
+@keyframes scroll-seamless {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-seamless {
+  animation: scroll-seamless 25s linear infinite;
 }

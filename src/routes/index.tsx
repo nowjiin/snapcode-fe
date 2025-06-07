@@ -8,6 +8,7 @@ import { MyPage } from '../pages/mypage/MyPage';
 import { PersonalPage } from '../pages/personal/PersonalPage';
 import { SubmissionCompletePage } from '../pages/personal/SubmissionCompletePage';
 import { TestPage } from '../pages/test/TestPage';
+import { CustomPage } from '../pages/custom/CustomPage';
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,14 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <HomePage />
+      </Layout>
+    ),
+  },
+  {
+    path: '/custom',
+    element: (
+      <Layout>
+        <CustomPage />
       </Layout>
     ),
   },

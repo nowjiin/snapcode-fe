@@ -56,7 +56,7 @@ export function Header() {
           {/* Desktop Navigation */}
           <div className='hidden sm:flex sm:items-center sm:space-x-4'>
             <Link
-              to='/business'
+              to='/custom'
               className='font-pretendard text-gray-700 hover:text-indigo-600 px-2 py-2 text-sm font-bold transition-colors duration-200'
             >
               Business
@@ -98,8 +98,8 @@ export function Header() {
           <div className='sm:hidden'>
             <div className='pt-2 pb-3 space-y-1'>
               <Link
-                to='/business'
-                className='block font-pretendard text-gray-700 hover:text-indigo-600 px-3 py-2 text-base font-bold transition-colors duration-200'
+                to='/custom'
+                className='block font-pretendard text-gray-700 hover:text-[#FF7710] px-3 py-2 text-base font-bold transition-colors duration-200'
               >
                 Business
               </Link>
