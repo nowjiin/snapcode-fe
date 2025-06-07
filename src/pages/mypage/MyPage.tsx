@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { Title } from '../../components/Title';
 import { Button } from '../../components/Button';
 import { SubmissionCard } from '../../components/submissions/SubmissionCard';
@@ -13,6 +13,7 @@ import {
 export function MyPage() {
   const navigate = useNavigate();
   const { submissionId } = useParams();
+  const location = useLocation();
   const [submissions, setSubmissions] = useState<SubmissionListItem[]>([]);
   const [selectedSubmission, setSelectedSubmission] =
     useState<Submission | null>(null);
@@ -26,15 +27,48 @@ export function MyPage() {
     }
   }, [submissionId]);
 
+  // 페이지로 새로 이동할 때마다 상태 초기화 (헤더에서 마이페이지 클릭시)
+  useEffect(() => {
+    // URL 파라미터가 없고, 새로운 네비게이션인 경우 상태 초기화
+    if (!submissionId) {
+      setSubmissions([]);
+      setSelectedSubmission(null);
+      setHasFetched(false);
+      setError(null);
+    }
+  }, [location.key, submissionId]);
+
   const fetchSubmissions = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await submissionService.getMySubmissions();
-      const submissionsArray = Array.isArray(response) ? response : [response];
-      setSubmissions(submissionsArray);
+
+      // 새로운 API 응답 구조: { submissions: [...] }
+      if (
+        response &&
+        response.submissions &&
+        Array.isArray(response.submissions)
+      ) {
+        setSubmissions(response.submissions);
+      } else {
+        // 응답이 예상한 형태가 아닌 경우 빈 배열
+        setSubmissions([]);
+      }
       setHasFetched(true);
-    } catch (err) {
+    } catch (err: unknown) {
+      // 404나 다른 에러 응답에서 메시지가 있는 경우 처리
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as {
+          response?: { data?: { message?: string } };
+        };
+        if (axiosError.response?.data?.message?.includes('아직 제출한')) {
+          // "아직 제출한 프로젝트가 없습니다" 메시지인 경우
+          setSubmissions([]);
+          setHasFetched(true);
+          return;
+        }
+      }
       setError('제출 내역을 불러오는데 실패했습니다.');
       console.error('Failed to fetch submissions:', err);
     } finally {
@@ -102,12 +136,7 @@ export function MyPage() {
 
         {selectedSubmission ? (
           <SubmissionDetail
-            submission={{
-              ...selectedSubmission,
-              evaluation_result: selectedSubmission.evaluation_result as
-                | string[]
-                | null,
-            }}
+            submission={selectedSubmission}
             onBack={handleBack}
           />
         ) : (

@@ -13,10 +13,34 @@ import { EvaluateButton } from '../../components/EvaluateButton';
 import { Button } from '../../components/Button';
 import { TerminalLoader } from '../../components/loaders/TerminalLoader';
 
+// 평가 기준 매핑 (한글 표시 -> 영어 전송)
+const EVALUATION_CRITERIA = [
+  {
+    display: '혁신성 & 시장 파괴력',
+    value: 'Innovation & Market Disruption',
+  },
+  {
+    display: '기술 우수성 & 코드 품질',
+    value: 'Technical Excellence & Code Quality',
+  },
+  {
+    display: '확장성 & 성장 잠재력',
+    value: 'Scalability & Growth Potential',
+  },
+  {
+    display: '제품 우수성 & 사용성',
+    value: 'Product Excellence & UX',
+  },
+  {
+    display: '경쟁 우위 & 경쟁력',
+    value: 'Competitive Advantage & Moats',
+  },
+] as const;
+
 export function PersonalPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<CreateSubmissionRequest>({
-    team_name: '',
+    team_name: null,
     title: '',
     description: '',
     competition_name: 'default',
@@ -36,13 +60,13 @@ export function PersonalPage() {
     }
   };
 
-  const handleButtonClick = (buttonName: string) => {
+  const handleButtonClick = (criteriaValue: string) => {
     setActiveButtons((prev) => {
       const newSet = new Set(prev);
-      if (newSet.has(buttonName)) {
-        newSet.delete(buttonName);
+      if (newSet.has(criteriaValue)) {
+        newSet.delete(criteriaValue);
       } else {
-        newSet.add(buttonName);
+        newSet.add(criteriaValue);
       }
       return newSet;
     });
@@ -89,7 +113,7 @@ export function PersonalPage() {
       const evaluationCriteria = Array.from(activeButtons);
 
       const submissionData = {
-        team_name: 'string',
+        team_name: null,
         title: formData.title,
         description: formData.description,
         competition_name: 'default',
@@ -174,22 +198,15 @@ export function PersonalPage() {
               </span>
             </div>
 
-            <div className='flex gap-4'>
-              <EvaluateButton
-                onClick={() => handleButtonClick('Code Quality')}
-                text='Code Quality'
-                isActive={activeButtons.has('Code Quality')}
-              />
-              <EvaluateButton
-                onClick={() => handleButtonClick('Project Structure')}
-                text='Project Structure'
-                isActive={activeButtons.has('Project Structure')}
-              />
-              <EvaluateButton
-                onClick={() => handleButtonClick('Creativity')}
-                text='Creativity'
-                isActive={activeButtons.has('Creativity')}
-              />
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4'>
+              {EVALUATION_CRITERIA.map((criteria) => (
+                <EvaluateButton
+                  key={criteria.value}
+                  onClick={() => handleButtonClick(criteria.value)}
+                  text={criteria.display}
+                  isActive={activeButtons.has(criteria.value)}
+                />
+              ))}
             </div>
           </div>
 

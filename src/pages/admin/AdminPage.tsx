@@ -6,8 +6,9 @@ import {
   type User,
   type GradingQueueResponse,
 } from '../../services/adminService';
+import { OpenAIManagementSection } from '../../components/admin/OpenAIManagementSection';
 
-type AdminSection = 'users' | 'settings' | 'grading';
+type AdminSection = 'users' | 'settings' | 'grading' | 'openai';
 
 export function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('users');
@@ -78,63 +79,11 @@ export function AdminPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        <div className='text-center text-[#6473A0]'>로딩 중...</div>
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-        <div className='text-center text-red-500'>{error}</div>
-      </main>
-    );
-  }
-
-  return (
-    <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
-      <div className='space-y-8'>
-        <div className='flex justify-between items-center'>
-          <Title>관리자 페이지</Title>
-        </div>
-
-        <div className='flex gap-4 border-b border-[#6473A0]'>
-          <button
-            onClick={() => setActiveSection('users')}
-            className={`px-4 py-2 font-pretendard text-[16px] ${
-              activeSection === 'users'
-                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
-                : 'text-gray-500'
-            }`}
-          >
-            사용자 관리
-          </button>
-          <button
-            onClick={() => setActiveSection('grading')}
-            className={`px-4 py-2 font-pretendard text-[16px] ${
-              activeSection === 'grading'
-                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
-                : 'text-gray-500'
-            }`}
-          >
-            평가 대기열
-          </button>
-          <button
-            onClick={() => setActiveSection('settings')}
-            className={`px-4 py-2 font-pretendard text-[16px] ${
-              activeSection === 'settings'
-                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
-                : 'text-gray-500'
-            }`}
-          >
-            설정
-          </button>
-        </div>
-
-        {activeSection === 'users' ? (
+  // Render different sections based on activeSection
+  const renderActiveSection = () => {
+    switch (activeSection) {
+      case 'users':
+        return (
           <div className='space-y-6'>
             <div className='flex justify-between items-center'>
               <h2 className='font-pretendard text-[24px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
@@ -179,7 +128,10 @@ export function AdminPage() {
               </div>
             )}
           </div>
-        ) : activeSection === 'grading' ? (
+        );
+
+      case 'grading':
+        return (
           <div className='space-y-6'>
             <div className='flex justify-between items-center'>
               <h2 className='font-pretendard text-[24px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
@@ -235,7 +187,13 @@ export function AdminPage() {
               </div>
             )}
           </div>
-        ) : (
+        );
+
+      case 'openai':
+        return <OpenAIManagementSection />;
+
+      case 'settings':
+        return (
           <div className='space-y-6'>
             <h2 className='font-pretendard text-[24px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
               평가 설정
@@ -266,7 +224,80 @@ export function AdminPage() {
               </div>
             </div>
           </div>
-        )}
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  if (loading) {
+    return (
+      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='text-center text-[#6473A0]'>로딩 중...</div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='text-center text-red-500'>{error}</div>
+      </main>
+    );
+  }
+
+  return (
+    <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+      <div className='space-y-8'>
+        <div className='flex justify-between items-center'>
+          <Title>관리자 페이지</Title>
+        </div>
+
+        <div className='flex gap-4 border-b border-[#6473A0]'>
+          <button
+            onClick={() => setActiveSection('users')}
+            className={`px-4 py-2 font-pretendard text-[16px] ${
+              activeSection === 'users'
+                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
+                : 'text-gray-500'
+            }`}
+          >
+            사용자 관리
+          </button>
+          <button
+            onClick={() => setActiveSection('grading')}
+            className={`px-4 py-2 font-pretendard text-[16px] ${
+              activeSection === 'grading'
+                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
+                : 'text-gray-500'
+            }`}
+          >
+            평가 대기열
+          </button>
+          <button
+            onClick={() => setActiveSection('openai')}
+            className={`px-4 py-2 font-pretendard text-[16px] ${
+              activeSection === 'openai'
+                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
+                : 'text-gray-500'
+            }`}
+          >
+            OpenAI 관리
+          </button>
+          <button
+            onClick={() => setActiveSection('settings')}
+            className={`px-4 py-2 font-pretendard text-[16px] ${
+              activeSection === 'settings'
+                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
+                : 'text-gray-500'
+            }`}
+          >
+            설정
+          </button>
+        </div>
+
+        {renderActiveSection()}
       </div>
     </main>
   );

@@ -6,17 +6,19 @@ import type {
   AssignRoleRequest,
 } from '../../types/admin';
 
+const baseUrl = '/api/v1/admin';
+
 export const userService = {
   // Get all users
   getUsers: async (): Promise<User[]> => {
-    const response = await axiosInstance.get<User[]>('/api/v1/admin/users');
+    const response = await axiosInstance.get<User[]>(`${baseUrl}/users`);
     return response.data || [];
   },
 
   // Get single user
   getUser: async (userId: number): Promise<User> => {
     const response = await axiosInstance.get<User>(
-      `/api/v1/admin/users/${userId}`
+      `${baseUrl}/users/${userId}`
     );
     return response.data;
   },
@@ -24,7 +26,7 @@ export const userService = {
   // Create user
   createUser: async (userData: CreateUserRequest): Promise<User> => {
     const response = await axiosInstance.post<User>(
-      '/api/v1/admin/users',
+      `${baseUrl}/users`,
       userData
     );
     return response.data;
@@ -36,7 +38,7 @@ export const userService = {
     userData: UpdateUserRequest
   ): Promise<User> => {
     const response = await axiosInstance.put<User>(
-      `/api/v1/admin/users/${userId}`,
+      `${baseUrl}/users/${userId}`,
       userData
     );
     return response.data;
@@ -44,13 +46,13 @@ export const userService = {
 
   // Delete user
   deleteUser: async (userId: number): Promise<void> => {
-    await axiosInstance.delete(`/api/v1/admin/users/${userId}`);
+    await axiosInstance.delete(`${baseUrl}/users/${userId}`);
   },
 
   // Assign role
   assignRole: async (roleData: AssignRoleRequest): Promise<User> => {
     const response = await axiosInstance.post<User>(
-      '/api/v1/admin/assign-role',
+      `${baseUrl}/assign-role`,
       roleData
     );
     return response.data;

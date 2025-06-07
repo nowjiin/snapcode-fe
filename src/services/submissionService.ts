@@ -6,7 +6,7 @@ export interface Repository {
 }
 
 export interface CreateSubmissionRequest {
-  team_name: string;
+  team_name: string | null;
   title: string;
   description: string;
   competition_name: string;
@@ -14,9 +14,25 @@ export interface CreateSubmissionRequest {
   evaluation_criteria: string[];
 }
 
+export interface CriteriaResult {
+  name: string;
+  score: number;
+  feedback?: string;
+  improvements: string[];
+  strengths: string[];
+  weaknesses: string[];
+}
+
+export interface EvaluationResult {
+  status: string;
+  total_score: number | null;
+  code_summary: string;
+  criteria_results: CriteriaResult[];
+}
+
 export interface Submission {
   submission_id: number;
-  team_name: string;
+  team_name: string | null;
   title: string;
   description: string;
   competition_name: string;
@@ -24,19 +40,25 @@ export interface Submission {
   status: string;
   score: number | null;
   feedback: string | null;
-  repositories: string[];
+  repositories: Repository[];
   evaluation_criteria: string[];
-  evaluation_result: Record<string, unknown> | null;
+  evaluation_result: EvaluationResult | null;
 }
 
 export interface SubmissionListItem {
   submission_id: number;
-  team_name: string;
+  team_name: string | null;
   title: string;
   description: string;
+  competition_name: string;
   submitted_at: string;
   status: string;
-  repositories: string[];
+  score: number | null;
+  repositories: Repository[];
+}
+
+export interface MySubmissionsResponse {
+  submissions: SubmissionListItem[];
 }
 
 class SubmissionService {
@@ -50,8 +72,8 @@ class SubmissionService {
     return response.data;
   }
 
-  async getMySubmissions(): Promise<SubmissionListItem[]> {
-    const response = await axiosInstance.get<SubmissionListItem[]>(
+  async getMySubmissions(): Promise<MySubmissionsResponse> {
+    const response = await axiosInstance.get<MySubmissionsResponse>(
       `${this.baseUrl}/submissions/me`
     );
     return response.data;
