@@ -1,4 +1,4 @@
-import { Header } from './Header';
+import { Header } from './common/Header';
 
 // Layout.tsx가 필요한 이유는 다음과 같습니다:
 // Fast Refresh 문제 해결

@@ -1,12 +1,19 @@
 import { useState } from 'react';
-import { Title } from '../../components/Title';
-import { Button } from '../../components/Button';
+import { Title } from '../../components/submissions/Title';
+import { Button } from '../../components/common/Button';
 import {
   adminService,
   type User,
   type GradingQueueResponse,
-} from '../../services/adminService';
+} from '../../services/openai/opneaiService';
 import { OpenAIManagementSection } from '../../components/admin/OpenAIManagementSection';
+import { Container, ContainerGrid } from '../../components/common/Container';
+import { BorderCard } from '../../components/admin/BorderCard';
+import { SmallCard } from '../../components/admin/SmallCard';
+import { CardTitle } from '../../components/admin/CardTitle';
+import { CardDescription } from '../../components/admin/CardDescription';
+import { CardButton } from '../../components/admin/CardButton';
+import { PieChart } from '../../components/admin/PieChart';
 
 type AdminSection = 'users' | 'settings' | 'grading' | 'openai';
 
@@ -253,6 +260,87 @@ export function AdminPage() {
         <div className='flex justify-between items-center'>
           <Title>관리자 페이지</Title>
         </div>
+
+        <Container>
+          <ContainerGrid columns={3}>
+            <BorderCard>
+              <CardTitle>AI 모델정보</CardTitle>
+              <CardDescription>
+                AI 모델정보를 조회할 수 있습니다.
+              </CardDescription>
+
+              <CardTitle>행사 진행일</CardTitle>
+              <CardDescription>2025.08.26~2025.08.27</CardDescription>
+            </BorderCard>
+            <BorderCard>
+              <CardTitle>AI 평가 시작하기</CardTitle>
+              <CardDescription>
+                해당 버튼은 제출 마감 후에 관리자 중 1분께서만 AI 평가 시작하기
+                버튼을 누르시면 즉시 모든 레포지토리의 평가가 시작됩니다.
+              </CardDescription>
+              <div className='flex justify-end'>
+                <CardButton>AI 평가 시작하기</CardButton>
+              </div>
+            </BorderCard>
+            <BorderCard>
+              <CardTitle>제출내역 조회하기</CardTitle>
+              <CardDescription>
+                모든 팀의 제출 내역을 실시간으로 조회할 수 있는 페이지입니다.
+              </CardDescription>
+              <div className='flex justify-end'>
+                <CardButton>제출내역 조회하기</CardButton>
+              </div>
+            </BorderCard>
+          </ContainerGrid>
+        </Container>
+
+        <Container>
+          <ContainerGrid columns={3}>
+            <BorderCard>
+              <div className='space-y-3'>
+                <SmallCard>
+                  <CardTitle>All Products</CardTitle>
+                  <CardDescription>45</CardDescription>
+                </SmallCard>
+                <SmallCard>
+                  <CardTitle>All Users</CardTitle>
+                  <CardDescription>100</CardDescription>
+                </SmallCard>
+              </div>
+            </BorderCard>
+
+            <BorderCard>
+              <div className='flex justify-center'>
+                <CardTitle>총 토큰 사용량</CardTitle>
+              </div>
+              <PieChart
+                tokenCount={15000}
+                usedTokens={8500}
+                totalTokens={15000}
+              />
+              <div className='flex justify-center mt-auto pt-4'>
+                <button
+                  className='flex justify-center items-center transition-all duration-200 hover:opacity-90 active:scale-95'
+                  style={{
+                    width: 'clamp(10rem, 15vw, 10.7rem)',
+                    padding: 'clamp(0.5rem, 1vw, 0.625rem)',
+                    gap: 'clamp(0.5rem, 1vw, 0.625rem)',
+                    borderRadius: 'clamp(0.25rem, 0.5vw, 0.31rem)',
+                    background: 'rgba(255, 143, 58, 0.18)',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#FF8F3A',
+                    fontFamily: 'Pretendard',
+                    fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)',
+                    fontWeight: '500',
+                  }}
+                >
+                  Details
+                </button>
+              </div>
+            </BorderCard>
+          </ContainerGrid>
+        </Container>
 
         <div className='flex gap-4 border-b border-[#6473A0]'>
           <button

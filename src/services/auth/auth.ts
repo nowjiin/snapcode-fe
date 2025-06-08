@@ -1,9 +1,9 @@
-import { axiosInstance } from '../lib/axios';
+import { axiosInstance } from '../../lib/axios';
 import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
-} from '../types/auth';
+} from '../../types/auth';
 
 export type UserRole = 'admin' | 'judge' | string;
 

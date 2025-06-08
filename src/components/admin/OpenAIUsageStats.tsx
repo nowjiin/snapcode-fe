@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button } from '../Button';
+import { Button } from '../common/Button';
 import {
   adminService,
   type OpenAIUsageStats,
-} from '../../services/adminService';
+} from '../../services/openai/opneaiService';
 
 export function OpenAIUsageStats() {
   const [stats, setStats] = useState<OpenAIUsageStats | null>(null);

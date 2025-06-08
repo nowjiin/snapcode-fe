@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/auth';
+import { authService } from '../../services/auth/auth';
 import { useAuth } from '../../hooks/useAuth';
 import type { LoginRequest } from '../../types/auth';
 import { AuthTitle } from '../../components/auth/AuthTitle';

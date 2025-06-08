@@ -4,13 +4,13 @@ import {
   submissionService,
   type CreateSubmissionRequest,
   type Repository,
-} from '../../services/submissionService';
-import { Title } from '../../components/Title';
-import { InputBox } from '../../components/InputBox';
-import { DescriptionInput } from '../../components/DescriptionInput';
-import { GuidingBox } from '../../components/GuidingBox';
-import { EvaluateButton } from '../../components/EvaluateButton';
-import { Button } from '../../components/Button';
+} from '../../services/submission/submissionService';
+import { Title } from '../../components/submissions/Title';
+import { InputBox } from '../../components/submissions/InputBox';
+import { DescriptionInput } from '../../components/submissions/DescriptionInput';
+import { GuidingBox } from '../../components/submissions/GuidingBox';
+import { EvaluateButton } from '../../components/submissions/EvaluateButton';
+import { Button } from '../../components/common/Button';
 import { TerminalLoader } from '../../components/loaders/TerminalLoader';
 
 // 평가 기준 매핑 (한글 표시 -> 영어 전송)

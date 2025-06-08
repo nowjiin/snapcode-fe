@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { authService, type UserRole } from '../services/auth';
+import { authService, type UserRole } from '../services/auth/auth';
 
 export function useRole() {
   const {

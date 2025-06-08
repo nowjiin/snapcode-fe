@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button } from '../Button';
-import { adminService } from '../../services/adminService';
+import { Button } from '../common/Button';
+import { adminService } from '../../services/openai/opneaiService';
 
 export function SystemConfigManager() {
   const [loading, setLoading] = useState(false);

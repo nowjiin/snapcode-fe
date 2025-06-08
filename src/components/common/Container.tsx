@@ -1,5 +1,5 @@
-import { Icon } from './Icon';
-import { H3, Paragraph } from './Typography';
+import { Icon } from '../custom/Icon';
+import { H3, Paragraph } from '../custom/Typography';
 
 interface ContainerProps {
   children: React.ReactNode;
@@ -20,11 +20,7 @@ export function Container({
     full: 'max-w-full',
   };
 
-  return (
-    <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${sizes[size]} ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={` ${sizes[size]} ${className}`}>{children}</div>;
 }
 
 interface SubContainerProps {
@@ -73,12 +69,17 @@ export function ContainerGrid({
   const gridCols = {
     1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+    3: 'grid-cols-1 md:grid-cols-3',
     4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
   };
 
+  // For 3 columns, use minimal gap and let cards stretch to full width
+  const gapClass = columns === 3 ? 'gap-2' : 'gap-6';
+
   return (
-    <div className={`grid gap-6 ${gridCols[columns]} ${className}`}>
+    <div
+      className={`grid ${gapClass} ${gridCols[columns]} w-full ${className}`}
+    >
       {children}
     </div>
   );

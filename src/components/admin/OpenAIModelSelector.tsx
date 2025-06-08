@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Button } from '../Button';
-import { adminService, type OpenAIModel } from '../../services/adminService';
+import { Button } from '../common/Button';
+import {
+  adminService,
+  type OpenAIModel,
+} from '../../services/openai/opneaiService';
 
 interface OpenAIModelSelectorProps {
   onModelChange?: (model: OpenAIModel) => void;

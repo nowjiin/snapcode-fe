@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Title } from '../../components/Title';
-import { GuidingBox } from '../../components/GuidingBox';
-import { Button } from '../../components/Button';
-import { EvaluateButton } from '../../components/EvaluateButton';
-import type { CreateSubmissionRequest } from '../../services/submissionService';
+import { Title } from '../../components/submissions/Title';
+import { GuidingBox } from '../../components/submissions/GuidingBox';
+import { Button } from '../../components/common/Button';
+import { EvaluateButton } from '../../components/submissions/EvaluateButton';
+import type { CreateSubmissionRequest } from '../../services/submission/submissionService';
 
 export function SubmissionCompletePage() {
   const location = useLocation();

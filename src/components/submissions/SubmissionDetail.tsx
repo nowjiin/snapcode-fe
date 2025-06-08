@@ -1,5 +1,5 @@
-import { Button } from '../Button';
-import { EvaluateButton } from '../EvaluateButton';
+import { Button } from '../common/Button';
+import { EvaluateButton } from './EvaluateButton';
 import type { Submission } from '../../services/submissionService';
 
 interface SubmissionDetailProps {

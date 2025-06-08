@@ -1,4 +1,4 @@
-import { Container, ContainerGrid } from '../../components/custom/Container';
+import { Container, ContainerGrid } from '../../components/common/Container';
 import { Button } from '../../components/custom/Button';
 import { FeatureCard } from '../../components/custom/FeatureCard';
 

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../Button';
+import { Button } from '../common/Button';
 import type { SubmissionListItem } from '../../services/submissionService';
 
 interface SubmissionCardProps {

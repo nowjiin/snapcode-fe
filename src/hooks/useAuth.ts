@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { authService } from '../services/auth';
+import { authService } from '../services/auth/auth';
 import type { LoginResponse } from '../types/auth';
 
 export function useAuth() {

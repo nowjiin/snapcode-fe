@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { Title } from '../../components/Title';
-import { Button } from '../../components/Button';
+import { Title } from '../../components/submissions/Title';
+import { Button } from '../../components/common/Button';
 import { SubmissionCard } from '../../components/submissions/SubmissionCard';
 import { SubmissionDetail } from '../../components/submissions/SubmissionDetail';
 import {
   submissionService,
   type Submission,
   type SubmissionListItem,
-} from '../../services/submissionService';
+} from '../../services/submission/submissionService';
 
 export function MyPage() {
   const navigate = useNavigate();
