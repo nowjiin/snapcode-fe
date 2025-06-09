@@ -21,7 +21,7 @@ import { Header } from './common/Header';
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Header />
+      <Header transparent={false} />
       {children}
     </>
   );

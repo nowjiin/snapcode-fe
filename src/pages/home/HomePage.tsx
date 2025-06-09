@@ -18,7 +18,7 @@ export function HomePage() {
           zIndex: -1,
         }}
       />
-      <div className='flex flex-col items-center justify-center w-full h-full py-12 px-4'>
+      <div className='flex flex-col items-center justify-center w-full h-full py-24 px-4'>
         <div className='flex flex-col items-center space-y-8'>
           <h2
             className='text-4xl md:text-[60px] font-extrabold leading-tight md:leading-normal text-[#6473A0] font-pretendard text-center animate-fade-in'

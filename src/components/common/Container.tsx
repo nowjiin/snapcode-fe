@@ -5,12 +5,14 @@ interface ContainerProps {
   children: React.ReactNode;
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  centered?: boolean;
 }
 
 export function Container({
   children,
   className = '',
   size = 'lg',
+  centered = true,
 }: ContainerProps) {
   const sizes = {
     sm: 'max-w-3xl',
@@ -20,7 +22,13 @@ export function Container({
     full: 'max-w-full',
   };
 
-  return <div className={` ${sizes[size]} ${className}`}>{children}</div>;
+  const centerClass = centered ? 'mx-auto' : '';
+
+  return (
+    <div className={`${sizes[size]} ${centerClass} ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 interface SubContainerProps {
