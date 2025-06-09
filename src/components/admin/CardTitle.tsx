@@ -8,7 +8,7 @@ interface CardTitleProps {
 export function CardTitle({ children, className = '' }: CardTitleProps) {
   return (
     <h1
-      className={`text-base md:text-lg lg:text-xl mb-3 ${className}`}
+      className={`text-base md:text-lg lg:text-xl mb-1 ${className}`}
       style={{
         color: '#1A1A1A',
         fontFeatureSettings: "'liga' off, 'clig' off",

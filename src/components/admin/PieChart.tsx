@@ -1,14 +1,14 @@
 interface PieChartProps {
-  tokenCount: number;
   usedTokens: number;
   totalTokens: number;
+  unit?: string;
   className?: string;
 }
 
 export function PieChart({
-  tokenCount,
   usedTokens,
   totalTokens,
+  unit = 'token',
   className = '',
 }: PieChartProps) {
   const percentage = (usedTokens / totalTokens) * 100;
@@ -53,7 +53,7 @@ export function PieChart({
               fontFamily: 'Pretendard',
             }}
           >
-            {tokenCount.toLocaleString()}
+            {usedTokens.toLocaleString()}
           </span>
           <span
             className='text-sm mt-1'
@@ -62,7 +62,7 @@ export function PieChart({
               fontFamily: 'Pretendard',
             }}
           >
-            token
+            {unit}
           </span>
         </div>
       </div>

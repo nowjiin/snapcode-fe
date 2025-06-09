@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { AdminPage } from '../pages/admin/AdminPage';
+import { GetAllSubmissionsPage } from '../pages/admin/GetAllSubmissionsPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { SignUpPage } from '../pages/auth/SignUpPage';
 import { HomePage } from '../pages/home/HomePage';
@@ -80,6 +81,14 @@ export const router = createBrowserRouter([
     element: (
       <Layout>
         <AdminPage />
+      </Layout>
+    ),
+  },
+  {
+    path: '/admin/getAllSubmissionsPage',
+    element: (
+      <Layout>
+        <GetAllSubmissionsPage />
       </Layout>
     ),
   },

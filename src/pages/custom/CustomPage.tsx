@@ -63,14 +63,14 @@ export function CustomPage() {
       <div className='w-full bg-black py-16'>
         <Container size='lg'>
           <div className='max-w-5xl mx-auto'>
-            <h2 className='text-white text-left text-4xl font-bold mb-8'>
+            <h2 className='text-white text-left text-4xl font-bold m-8'>
               What is SNAPCODE?
             </h2>
             <ContainerGrid columns={3} className='gap-8'>
               <FeatureCard
                 icon='chart'
                 title='정확한 평가 기준으로!'
-                description='명확한 평가 기준을 바탕으로 우리 팀의 프로덕트 코드를 br 심사받을 수 있어요.'
+                description='명확한 평가 기준을 바탕으로 우리 팀의 프로덕트 코드를 심사받을 수 있어요.'
               />
 
               <FeatureCard

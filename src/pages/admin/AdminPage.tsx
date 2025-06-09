@@ -1,32 +1,53 @@
-import { useState } from 'react';
-import { Title } from '../../components/submissions/Title';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/common/Button';
 import {
   adminService,
   type User,
   type GradingQueueResponse,
+  type OpenAIUsageStats,
 } from '../../services/openai/opneaiService';
 import { OpenAIManagementSection } from '../../components/admin/OpenAIManagementSection';
 import { Container, ContainerGrid } from '../../components/common/Container';
 import { BorderCard } from '../../components/admin/BorderCard';
 import { SmallCard } from '../../components/admin/SmallCard';
 import { CardTitle } from '../../components/admin/CardTitle';
+import { AdminSubTitle } from '../../components/admin/AdminSubTitle';
+import { AdminTitle } from '../../components/admin/AdminTitle';
 import { CardDescription } from '../../components/admin/CardDescription';
 import { CardButton } from '../../components/admin/CardButton';
 import { PieChart } from '../../components/admin/PieChart';
+import { OpenAIStatsModal } from '../../components/admin/OpenAIStatsModal';
 
-type AdminSection = 'users' | 'settings' | 'grading' | 'openai';
+type AdminSection = 'users' | 'grading' | 'openai';
 
 export function AdminPage() {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<AdminSection>('users');
   const [users, setUsers] = useState<User[]>([]);
   const [gradingQueue, setGradingQueue] = useState<GradingQueueResponse | null>(
     null
   );
+  const [openAIStats, setOpenAIStats] = useState<OpenAIUsageStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetchedUsers, setHasFetchedUsers] = useState(false);
   const [hasFetchedQueue, setHasFetchedQueue] = useState(false);
+  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+
+  // Fetch OpenAI stats on component mount
+  useEffect(() => {
+    fetchOpenAIStats();
+  }, []);
+
+  const fetchOpenAIStats = async () => {
+    try {
+      const stats = await adminService.getOpenAIUsageStats();
+      setOpenAIStats(stats);
+    } catch (err) {
+      console.error('Failed to fetch OpenAI stats:', err);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -199,40 +220,6 @@ export function AdminPage() {
       case 'openai':
         return <OpenAIManagementSection />;
 
-      case 'settings':
-        return (
-          <div className='space-y-6'>
-            <h2 className='font-pretendard text-[24px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
-              평가 설정
-            </h2>
-            <div className='space-y-6'>
-              <div className='p-6 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
-                <p className='text-[#6473A0] mb-4'>
-                  대기 중인 모든 제출물에 대한 평가를 시작합니다.
-                </p>
-                <Button
-                  onClick={handleStartGrading}
-                  className='w-[180px] h-[60px] text-[20px]'
-                >
-                  평가 시작
-                </Button>
-              </div>
-
-              <div className='p-6 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
-                <p className='text-[#6473A0] mb-4'>
-                  대기 중인 평가 항목들을 처리합니다.
-                </p>
-                <Button
-                  onClick={handleStartEvaluation}
-                  className='w-[180px] h-[60px] text-[20px]'
-                >
-                  평가 항목 처리
-                </Button>
-              </div>
-            </div>
-          </div>
-        );
-
       default:
         return null;
     }
@@ -257,38 +244,53 @@ export function AdminPage() {
   return (
     <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
       <div className='space-y-8 pt-24'>
-        <div className='flex justify-between items-center'>
-          <Title>관리자 페이지</Title>
+        <div className='flex justify-between flex-col'>
+          <AdminSubTitle>안녕하세요, 관리자님!</AdminSubTitle>
+          <AdminTitle>멋쟁이사자처럼 13기</AdminTitle>
+          <AdminTitle>중앙 해커톤 관리자 페이지입니다.</AdminTitle>
         </div>
 
         <Container>
           <ContainerGrid columns={3}>
-            <BorderCard>
-              <CardTitle>AI 모델정보</CardTitle>
-              <CardDescription>
-                AI 모델정보를 조회할 수 있습니다.
-              </CardDescription>
-
-              <CardTitle>행사 진행일</CardTitle>
-              <CardDescription>2025.08.26~2025.08.27</CardDescription>
+            <BorderCard className='flex flex-col justify-between'>
+              <div>
+                <CardTitle>AI 모델정보</CardTitle>
+                <CardDescription>claude 3.5 sonnet</CardDescription>
+              </div>
+              <div>
+                <CardTitle>행사 진행일</CardTitle>
+                <CardDescription>2025.08.26~2025.08.27</CardDescription>
+              </div>
             </BorderCard>
-            <BorderCard>
+            <BorderCard className='flex flex-col justify-between'>
               <CardTitle>AI 평가 시작하기</CardTitle>
               <CardDescription>
                 해당 버튼은 제출 마감 후에 관리자 중 1분께서만 AI 평가 시작하기
                 버튼을 누르시면 즉시 모든 레포지토리의 평가가 시작됩니다.
               </CardDescription>
-              <div className='flex justify-end'>
-                <CardButton>AI 평가 시작하기</CardButton>
+
+              <div className='flex justify-end gap-3'>
+                <CardButton onClick={handleStartGrading}>
+                  깃허브 레포지토리 가져오기
+                </CardButton>
+                <CardButton onClick={handleStartEvaluation}>
+                  AI 평가 시작하기
+                </CardButton>
               </div>
             </BorderCard>
-            <BorderCard>
-              <CardTitle>제출내역 조회하기</CardTitle>
-              <CardDescription>
-                모든 팀의 제출 내역을 실시간으로 조회할 수 있는 페이지입니다.
-              </CardDescription>
+            <BorderCard className='flex flex-col justify-between'>
+              <div>
+                <CardTitle>제출내역 조회하기</CardTitle>
+                <CardDescription>
+                  모든 팀의 제출 내역을 실시간으로 조회할 수 있는 페이지입니다.
+                </CardDescription>
+              </div>
               <div className='flex justify-end'>
-                <CardButton>제출내역 조회하기</CardButton>
+                <CardButton
+                  onClick={() => navigate('/admin/getAllSubmissionsPage')}
+                >
+                  제출내역 조회하기
+                </CardButton>
               </div>
             </BorderCard>
           </ContainerGrid>
@@ -299,14 +301,28 @@ export function AdminPage() {
             <BorderCard>
               <div className='space-y-3'>
                 <SmallCard>
-                  <CardTitle>All Products</CardTitle>
-                  <CardDescription>45</CardDescription>
-                </SmallCard>
-                <SmallCard>
-                  <CardTitle>All Users</CardTitle>
+                  <CardTitle>총 제출 수</CardTitle>
                   <CardDescription>100</CardDescription>
                 </SmallCard>
+                <SmallCard>
+                  <CardTitle>제출한 팀 수</CardTitle>
+                  <CardDescription>70</CardDescription>
+                </SmallCard>
               </div>
+            </BorderCard>
+
+            <BorderCard>
+              <div className='flex justify-center'>
+                <CardTitle>총 평가 횟수</CardTitle>
+              </div>
+              <PieChart
+                usedTokens={openAIStats?.overall_stats.total_evaluations || 0}
+                totalTokens={Math.max(
+                  50,
+                  (openAIStats?.overall_stats.total_evaluations || 0) * 1.2
+                )}
+                unit='times'
+              />
             </BorderCard>
 
             <BorderCard>
@@ -314,9 +330,12 @@ export function AdminPage() {
                 <CardTitle>총 토큰 사용량</CardTitle>
               </div>
               <PieChart
-                tokenCount={15000}
-                usedTokens={8500}
-                totalTokens={15000}
+                usedTokens={openAIStats?.overall_stats.total_tokens_used || 0}
+                totalTokens={Math.max(
+                  50000,
+                  (openAIStats?.overall_stats.total_tokens_used || 0) * 1.2
+                )}
+                unit='tokens'
               />
               <div className='flex justify-center mt-auto pt-4'>
                 <button
@@ -334,6 +353,7 @@ export function AdminPage() {
                     fontSize: 'clamp(0.75rem, 1.2vw, 0.875rem)',
                     fontWeight: '500',
                   }}
+                  onClick={() => setIsStatsModalOpen(true)}
                 >
                   Details
                 </button>
@@ -373,20 +393,17 @@ export function AdminPage() {
           >
             OpenAI 관리
           </button>
-          <button
-            onClick={() => setActiveSection('settings')}
-            className={`px-4 py-2 font-pretendard text-[16px] ${
-              activeSection === 'settings'
-                ? 'text-[#6473A0] border-b-2 border-[#6473A0]'
-                : 'text-gray-500'
-            }`}
-          >
-            설정
-          </button>
         </div>
 
         {renderActiveSection()}
       </div>
+
+      {/* OpenAI Stats Modal */}
+      <OpenAIStatsModal
+        isOpen={isStatsModalOpen}
+        onClose={() => setIsStatsModalOpen(false)}
+        stats={openAIStats}
+      />
     </main>
   );
 }

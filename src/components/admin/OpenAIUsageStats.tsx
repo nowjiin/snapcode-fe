@@ -1,30 +1,29 @@
-import { useState } from 'react';
-import { Button } from '../common/Button';
+import { useState, useEffect } from 'react';
 import {
   adminService,
   type OpenAIUsageStats,
 } from '../../services/openai/opneaiService';
+import { PieChart } from './PieChart';
 
 export function OpenAIUsageStats() {
   const [stats, setStats] = useState<OpenAIUsageStats | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasFetchedStats, setHasFetchedStats] = useState(false);
 
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await adminService.getOpenAIUsageStats();
-      setStats(data);
-      setHasFetchedStats(true);
-    } catch (err) {
-      setError('사용량 통계를 불러오는데 실패했습니다.');
-      console.error('Failed to fetch OpenAI usage stats:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Fetch stats automatically on mount
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setError(null);
+        const data = await adminService.getOpenAIUsageStats();
+        setStats(data);
+      } catch (err) {
+        setError('사용량 통계를 불러오는데 실패했습니다.');
+        console.error('Failed to fetch OpenAI usage stats:', err);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const formatNumber = (num: number | undefined): string => {
     if (num === undefined) return '0';
@@ -51,25 +50,14 @@ export function OpenAIUsageStats() {
         <h3 className='font-pretendard text-[20px] font-medium leading-[28px] tracking-[-0.386px] text-[#6473A0]'>
           OpenAI 사용량 통계
         </h3>
-        <Button
-          onClick={fetchStats}
-          disabled={loading}
-          className='w-[150px] h-[50px] text-[16px]'
-        >
-          통계 조회
-        </Button>
       </div>
 
-      {!hasFetchedStats ? (
-        <div className='text-center text-[#6473A0] py-8'>
-          통계 조회 버튼을 눌러주세요.
-        </div>
-      ) : error ? (
+      {error ? (
         <div className='text-center text-red-500 py-8'>{error}</div>
       ) : stats ? (
         <div className='space-y-6'>
           {/* Overall Statistics */}
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
             <div className='p-4 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
               <h4 className='font-pretendard text-[18px] font-medium text-[#6473A0] mb-3'>
                 전체 평가 수
@@ -79,13 +67,18 @@ export function OpenAIUsageStats() {
               </div>
             </div>
 
-            <div className='p-4 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
-              <h4 className='font-pretendard text-[18px] font-medium text-[#6473A0] mb-3'>
+            <div className='p-6 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)] flex flex-col items-center'>
+              <h4 className='font-pretendard text-[18px] font-medium text-[#6473A0] mb-4 text-center'>
                 총 토큰 사용량
               </h4>
-              <div className='text-[#6473A0] font-medium text-2xl'>
-                {formatNumber(stats.overall_stats.total_tokens_used)}
-              </div>
+              <PieChart
+                usedTokens={stats.overall_stats.total_tokens_used}
+                totalTokens={Math.max(
+                  100000,
+                  stats.overall_stats.total_tokens_used * 1.2
+                )}
+                unit='tokens'
+              />
             </div>
 
             <div className='p-4 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
@@ -94,6 +87,20 @@ export function OpenAIUsageStats() {
               </h4>
               <div className='text-[#6473A0] font-medium text-2xl'>
                 {formatNumber(stats.overall_stats.unique_models_used)}
+              </div>
+            </div>
+
+            <div className='p-4 rounded-lg border-[0.702px] border-[#6473A0] bg-[rgba(67,67,67,0.04)]'>
+              <h4 className='font-pretendard text-[18px] font-medium text-[#6473A0] mb-3'>
+                평균 토큰/평가
+              </h4>
+              <div className='text-[#6473A0] font-medium text-2xl'>
+                {formatNumber(
+                  Math.round(
+                    stats.overall_stats.total_tokens_used /
+                      stats.overall_stats.total_evaluations
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -179,7 +186,11 @@ export function OpenAIUsageStats() {
             </div>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className='text-center text-[#6473A0] py-8'>
+          통계를 불러오는 중...
+        </div>
+      )}
     </div>
   );
 }
