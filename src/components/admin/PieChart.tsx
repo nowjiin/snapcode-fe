@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface PieChartProps {
   tokenCount: number;
   usedTokens: number;
