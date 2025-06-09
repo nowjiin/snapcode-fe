@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import { Title } from '../../components/submissions/Title';
 import { Button } from '../../components/common/Button';
 import { Container } from '../../components/common/Container';
@@ -152,12 +153,77 @@ export function GetAllSubmissionsPage() {
   };
 
   const handleExportSelected = () => {
-    // TODO: Implement Excel export functionality
     const selectedSubmissions = submissions.filter((item) =>
       selectedItems.has(item.submission_id)
     );
-    console.log('Exporting selected items:', selectedSubmissions);
-    alert(`${selectedItems.size}개의 항목을 내보내기 준비 중입니다.`);
+
+    if (selectedSubmissions.length === 0) {
+      alert('내보낼 항목을 선택해주세요.');
+      return;
+    }
+
+    // Prepare data for Excel export
+    const exportData = selectedSubmissions.map((submission) => ({
+      제출ID: submission.submission_id,
+      프로젝트명: submission.title,
+      팀명: submission.team_name,
+      사용자ID: submission.user_id,
+      대회명: submission.competition_name,
+      제출일: new Date(submission.submitted_at).toLocaleString('ko-KR'),
+      상태: submission.status,
+      평가상태: submission.evaluation_result.status,
+      총점: submission.evaluation_result.total_score || '평가 전',
+      설명: submission.description,
+      저장소개수: submission.repositories.length,
+      첫번째저장소: submission.repositories[0]?.repo_url || '없음',
+      평가항목개수: submission.evaluation_criteria.length,
+      평가세부점수:
+        submission.evaluation_result.criteria_results
+          .map((result) => `${result.name}: ${result.score}점`)
+          .join(', ') || '평가 전',
+    }));
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths for better readability
+    const columnWidths = [
+      { wch: 10 }, // 제출ID
+      { wch: 30 }, // 프로젝트명
+      { wch: 15 }, // 팀명
+      { wch: 10 }, // 사용자ID
+      { wch: 15 }, // 대회명
+      { wch: 20 }, // 제출일
+      { wch: 12 }, // 상태
+      { wch: 12 }, // 평가상태
+      { wch: 10 }, // 총점
+      { wch: 50 }, // 설명
+      { wch: 12 }, // 저장소개수
+      { wch: 40 }, // 첫번째저장소
+      { wch: 12 }, // 평가항목개수
+      { wch: 50 }, // 평가세부점수
+    ];
+
+    worksheet['!cols'] = columnWidths;
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, '제출내역');
+
+    // Generate filename with current date
+    const now = new Date();
+    const dateString = now
+      .toLocaleDateString('ko-KR')
+      .replace(/\./g, '')
+      .replace(/\s/g, '');
+    const filename = `제출내역_${dateString}_${selectedSubmissions.length}건.xlsx`;
+
+    // Save the file
+    XLSX.writeFile(workbook, filename);
+
+    alert(
+      `${selectedSubmissions.length}개의 항목을 Excel 파일로 내보냈습니다.`
+    );
   };
 
   const getStatusBadge = (status: string, evaluationStatus?: string) => {
