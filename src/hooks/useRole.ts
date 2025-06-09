@@ -1,27 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
 import { authService, type UserRole } from '../services/auth/auth';
+import type { User } from '../types/auth';
 
 export function useRole() {
   const {
-    data: role,
+    data: user,
     isLoading,
     error,
-  } = useQuery<UserRole>({
+  } = useQuery<User>({
     queryKey: ['userRole'],
     queryFn: authService.getRole,
     enabled: authService.isAuthenticated(),
   });
 
   const hasRole = (requiredRole: UserRole) => {
-    return role === requiredRole;
+    return user?.role === requiredRole;
   };
 
   const hasAnyRole = (roles: UserRole[]) => {
-    return roles.includes(role as UserRole);
+    return roles.includes(user?.role as UserRole);
   };
 
   return {
-    role,
+    user,
+    role: user?.role,
     isLoading,
     error,
     hasRole,

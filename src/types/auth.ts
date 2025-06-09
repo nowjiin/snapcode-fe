@@ -14,6 +14,13 @@ export interface LoginResponse {
   token_type: 'bearer';
 }
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  role: string;
+}
+
 export interface AuthError {
   message: string;
   status: number;

@@ -3,6 +3,7 @@ import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
+  User,
 } from '../../types/auth';
 
 export type UserRole = 'admin' | 'judge' | string;
@@ -24,8 +25,8 @@ export const authService = {
     return response.data;
   },
 
-  async getRole(): Promise<UserRole> {
-    const response = await axiosInstance.get<UserRole>('/api/v1/auth/get_role');
+  async getRole(): Promise<User> {
+    const response = await axiosInstance.get<User>('/api/v1/auth/get_role');
     return response.data;
   },
 

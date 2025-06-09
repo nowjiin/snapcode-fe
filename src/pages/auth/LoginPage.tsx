@@ -28,7 +28,16 @@ export function LoginPage() {
     try {
       const response = await authService.login(data);
       login(response);
-      navigate('/');
+
+      // Get user role after successful login
+      const userRole = await authService.getRole();
+
+      // Redirect based on role
+      if (userRole.role === 'admin') {
+        navigate('/custom');
+      } else {
+        navigate('/');
+      }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message: string } } };
       setError(

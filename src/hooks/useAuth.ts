@@ -6,7 +6,7 @@ export function useAuth() {
   const queryClient = useQueryClient();
   const isAuthenticated = authService.isAuthenticated();
 
-  const { data: role, isLoading } = useQuery({
+  const { data: user, isLoading } = useQuery({
     queryKey: ['userRole'],
     queryFn: authService.getRole,
     enabled: isAuthenticated,
@@ -27,7 +27,8 @@ export function useAuth() {
 
   return {
     isAuthenticated,
-    role,
+    user,
+    role: user?.role,
     isLoading,
     login,
     logout,
