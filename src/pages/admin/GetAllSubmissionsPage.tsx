@@ -4,116 +4,25 @@ import * as XLSX from 'xlsx';
 import { Title } from '../../components/submissions/Title';
 import { Button } from '../../components/common/Button';
 import { Container } from '../../components/common/Container';
-
-// Updated interface to match actual API response
-interface Submission {
-  submission_id: number;
-  team_name: string;
-  title: string;
-  description: string;
-  competition_name: string;
-  submitted_at: string;
-  status: string;
-  user_id: number;
-  repositories: Array<{
-    type: string;
-    repo_url: string;
-  }>;
-  evaluation_criteria: string[];
-  evaluation_result: {
-    status: string;
-    total_score: number | null;
-    criteria_results: Array<{
-      name: string;
-      score: number;
-    }>;
-  };
-}
+import { adminSubmissionService } from '../../services/admin/submissionService';
+import type { AdminSubmission } from '../../services/admin/submissionService';
 
 export function GetAllSubmissionsPage() {
   const navigate = useNavigate();
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [submissions, setSubmissions] = useState<AdminSubmission[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const [selectAll, setSelectAll] = useState(false);
 
-  // Mock function - replace with actual service call
   const fetchAllSubmissions = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Mock data matching actual API response structure
-      // const response = await adminService.getAllSubmissions();
-      const mockSubmissions: Submission[] = [
-        {
-          submission_id: 11,
-          team_name: 'personal',
-          title: 'On-device-AI',
-          description:
-            '한글 데이터로 파인튜닝한 RAG(Retrieval-Augmented Generation) 모델을 Ollama를 활용해 온디바이스에서 실행 가능한 형태로 구현한 생성형 AI 프로그램입니다.\n외부 서버나 클라우드 환경 없이도 개인 PC나 로컬 장비에서 빠르고 안전하게 생성형 AI를 사용할 수 있도록 하였으며, \n검색 기반의 정밀한 정보 응답과 자연스러운 한글 생성 능력을 동시에 제공합니다.\n개인화된 지식 검색, 문서 요약, 질의응답 등 다양한 용도로 활용 가능합니다.',
-          competition_name: 'default',
-          submitted_at: '2025-06-07T20:30:15.462598',
-          status: 'submitted',
-          user_id: 6,
-          repositories: [
-            {
-              type: 'backend',
-              repo_url: 'https://github.com/nowjiin/on-device-ai',
-            },
-          ],
-          evaluation_criteria: [],
-          evaluation_result: {
-            status: 'waiting',
-            total_score: null,
-            criteria_results: [],
-          },
-        },
-        {
-          submission_id: 10,
-          team_name: 'personal',
-          title: 'On Device AI',
-          description:
-            '한글 데이터로 파인튜닝한 RAG(Retrieval-Augmented Generation) 모델을 Ollama를 활용해 온디바이스에서 실행 가능한 형태로 구현한 생성형 AI 프로그램입니다. 외부 서버나 클라우드 환경 없이도 개인 PC나 로컬 장비에서 빠르고 안전하게 생성형 AI를 사용할 수 있도록 하였으며, 검색 기반의 정밀한 정보 응답과 자연스러운 한글 생성 능력을 동시에 제공합니다. 개인화된 지식 검색, 문서 요약, 질의응답 등 다양한 용도로 활용 가능합니다.',
-          competition_name: 'default',
-          submitted_at: '2025-05-30T14:05:44.942940',
-          status: 'completed',
-          user_id: 9,
-          repositories: [
-            {
-              type: 'backend',
-              repo_url: 'https://github.com/nowjiin/on-device-ai',
-            },
-          ],
-          evaluation_criteria: [
-            'Technical Excellence & Code Quality',
-            'Competitive Advantage & Moats',
-            'Innovation & Market Disruption',
-          ],
-          evaluation_result: {
-            status: 'completed',
-            total_score: 85,
-            criteria_results: [
-              {
-                name: 'Innovation & Market Disruption',
-                score: 90,
-              },
-              {
-                name: 'Competitive Advantage & Moats',
-                score: 80,
-              },
-              {
-                name: 'Technical Excellence & Code Quality',
-                score: 85,
-              },
-            ],
-          },
-        },
-      ];
-
-      setSubmissions(mockSubmissions);
+      const submissions = await adminSubmissionService.getAllSubmissions();
+      setSubmissions(submissions);
       setHasFetched(true);
       // Reset selections when new data is fetched
       setSelectedItems(new Set());
@@ -248,7 +157,9 @@ export function GetAllSubmissionsPage() {
     );
   };
 
-  const getRepositoryDisplay = (repositories: Submission['repositories']) => {
+  const getRepositoryDisplay = (
+    repositories: AdminSubmission['repositories']
+  ) => {
     if (!repositories || repositories.length === 0) {
       return <span className='text-gray-400 text-sm'>저장소 없음</span>;
     }
@@ -275,7 +186,7 @@ export function GetAllSubmissionsPage() {
   };
 
   const getScoreDisplay = (
-    evaluation_result: Submission['evaluation_result']
+    evaluation_result: AdminSubmission['evaluation_result']
   ) => {
     if (
       evaluation_result.status === 'completed' &&

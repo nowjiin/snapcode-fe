@@ -1,12 +1,27 @@
 import { axiosInstance } from '../../lib/axios';
 
 export interface AdminSubmission {
-  id: number;
-  title: string;
-  status: string;
+  submission_id: number;
   team_name: string;
+  title: string;
+  description: string;
+  competition_name: string;
   submitted_at: string;
-  score?: number;
+  status: string;
+  user_id: number;
+  repositories: Array<{
+    type: string;
+    repo_url: string;
+  }>;
+  evaluation_criteria: string[];
+  evaluation_result: {
+    status: string;
+    total_score: number | null;
+    criteria_results: Array<{
+      name: string;
+      score: number;
+    }>;
+  };
 }
 
 export interface GradingQueueItem {
@@ -17,11 +32,16 @@ export interface GradingQueueItem {
 const baseUrl = '/api/v1/admin';
 
 export const adminSubmissionService = {
-  async getSubmissions(): Promise<AdminSubmission[]> {
+  async getAllSubmissions(): Promise<AdminSubmission[]> {
     const response = await axiosInstance.get<AdminSubmission[]>(
       `${baseUrl}/submissions`
     );
     return response.data;
+  },
+
+  // Keep the old method for backward compatibility
+  async getSubmissions(): Promise<AdminSubmission[]> {
+    return this.getAllSubmissions();
   },
 
   async getGradingQueue(): Promise<GradingQueueItem[]> {
